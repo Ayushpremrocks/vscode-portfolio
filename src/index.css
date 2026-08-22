@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Default theme (One Dark Pro) injected here; JS overrides via CSS vars ─ */
+:root {
+  --bg:              #1f1f1f;
+  --bg-editor:       #1f1f1f;
+  --bg-sidebar:      #181818;
+  --bg-actbar:       #181818;
+  --bg-titlebar:     #181818;
+  --bg-tab-active:   #1f1f1f;
+  --bg-tab-inactive: #2d2d2d;
+  --bg-terminal:     #181818;
+  --bg-statusbar:    #181818;
+  --bg-hover:        #2a2d2e;
+  --bg-selected:     #04395e;
+  --bg-input:        #313131;
+  --border:          #2b2d31;
+  --text:            #cccccc;
+  --text-muted:      #9d9d9d;
+  --text-dim:        #6e7681;
+  --text-line:       #6e7681;
+  --keyword:         #569cd6;
+  --string:          #ce9178;
+  --comment:         #6a9955;
+  --number:          #b5cea8;
+  --type:            #4ec9b0;
+  --variable:        #9cdcfe;
+  --func:            #dcdcaa;
+  --operator:        #d4d4d4;
+  --property:        #9cdcfe;
+  --blue:            #007fd4;
+  --green:           #4ec9b0;
+  --orange:          #ce9178;
+  --purple:          #c586c0;
+  --yellow:          #dcdcaa;
+  --red:             #f44747;
+  --cyan:            #56b6c2;
+}
+
+/* ─── Base resets ───────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+}
+
+body {
+  font-family: 'JetBrains Mono', 'Fira Code', 'Menlo', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar styling ─────────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* ─── Selection ─────────────────────────────────────────────────────────── */
+::selection {
+  background: var(--bg-selected);
+  color: var(--text);
+}
+
+/* ─── Blinking cursor keyframe ──────────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ─── Focus ring (accessibility) ────────────────────────────────────────── */
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* ─── Overflow utilities ─────────────────────────────────────────────────── */
+.overflow-y-overlay {
+  overflow-y: overlay;
+}
+
+/* ─── Tab bar horizontal scroll ─────────────────────────────────────────── */
+.tab-scroll {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tab-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Code font for the whole app ────────────────────────────────────────── */
+.font-code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ─── Responsive: hide sidebar on very small screens ──────────────────── */
+@media (max-width: 640px) {
+  .sidebar-hide-mobile {
+    display: none;
+  }
+}
