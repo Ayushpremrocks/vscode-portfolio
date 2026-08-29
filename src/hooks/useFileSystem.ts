@@ -2,14 +2,20 @@ import { useState, useCallback } from 'react'
 import type { Tab, PanelName } from '../types'
 
 const FILE_META: Record<string, { name: string; language: string }> = {
-  'welcome':    { name: 'Welcome',       language: '' },
-  'about':      { name: 'about.ts',      language: 'TypeScript' },
-  'projects':   { name: 'projects.ts',   language: 'TypeScript' },
-  'skills':     { name: 'skills.ts',     language: 'TypeScript' },
-  'experience': { name: 'experience.ts', language: 'TypeScript' },
-  'education':  { name: 'education.ts',  language: 'TypeScript' },
-  'contact':    { name: 'contact.ts',    language: 'TypeScript' },
-  'resume':     { name: 'resume.ts',     language: 'TypeScript' },
+  'welcome':      { name: 'Welcome',             language: '' },
+  'about':        { name: 'about.ts',            language: 'TypeScript' },
+  'projects':     { name: 'projects.ts',         language: 'TypeScript' },
+  'skills':       { name: 'skills.ts',           language: 'TypeScript' },
+  'experience':   { name: 'experience.ts',       language: 'TypeScript' },
+  'education':    { name: 'education.ts',        language: 'TypeScript' },
+  'contact':      { name: 'contact.ts',          language: 'TypeScript' },
+  'resume':       { name: 'resume.ts',           language: 'TypeScript' },
+  'sports-watch': { name: 'sports-watch.ts',     language: 'TypeScript' },
+  'sports-play':  { name: 'sports-play.ts',      language: 'TypeScript' },
+  'instruments':  { name: 'instruments.ts',      language: 'TypeScript' },
+  'games':        { name: 'games.ts',            language: 'TypeScript' },
+  'movies-tv':    { name: 'movies-tv.ts',        language: 'TypeScript' },
+  'anime':        { name: 'anime.ts',            language: 'TypeScript' },
 }
 
 export function useFileSystem() {

@@ -19,13 +19,19 @@ interface CommandItem {
 }
 
 const COMMANDS: CommandItem[] = [
-  { id: 'about',      label: 'Open about.ts',      description: 'View bio and personal info',     panel: 'about',      icon: <FileCode2 size={14} /> },
-  { id: 'projects',   label: 'Open projects.ts',   description: 'Browse featured projects',        panel: 'projects',   icon: <FileCode2 size={14} /> },
-  { id: 'skills',     label: 'Open skills.ts',     description: 'Technical skills and tools',      panel: 'skills',     icon: <FileCode2 size={14} /> },
-  { id: 'experience', label: 'Open experience.ts', description: 'Work experience timeline',        panel: 'experience', icon: <FileCode2 size={14} /> },
-  { id: 'education',  label: 'Open education.ts',  description: 'Education history',               panel: 'education',  icon: <FileCode2 size={14} /> },
-  { id: 'contact',    label: 'Open contact.ts',    description: 'Get in touch',                    panel: 'contact',    icon: <FileCode2 size={14} /> },
-  { id: 'resume',     label: 'Open resume.ts',     description: 'View and download resume',        panel: 'resume',     icon: <FileCode2 size={14} /> },
+  { id: 'about',        label: 'Open about.ts',        description: 'View bio and personal info',     panel: 'about',        icon: <FileCode2 size={14} /> },
+  { id: 'projects',     label: 'Open projects.ts',     description: 'Browse featured projects',        panel: 'projects',     icon: <FileCode2 size={14} /> },
+  { id: 'skills',       label: 'Open skills.ts',       description: 'Technical skills and tools',      panel: 'skills',       icon: <FileCode2 size={14} /> },
+  { id: 'experience',   label: 'Open experience.ts',   description: 'Work experience timeline',        panel: 'experience',   icon: <FileCode2 size={14} /> },
+  { id: 'education',    label: 'Open education.ts',    description: 'Education history',               panel: 'education',    icon: <FileCode2 size={14} /> },
+  { id: 'contact',      label: 'Open contact.ts',      description: 'Get in touch',                    panel: 'contact',      icon: <FileCode2 size={14} /> },
+  { id: 'resume',       label: 'Open resume.ts',       description: 'View and download resume',        panel: 'resume',       icon: <FileCode2 size={14} /> },
+  { id: 'sports-watch', label: 'Open sports-watch.ts', description: 'Sports teams I follow',          panel: 'sports-watch', icon: <FileCode2 size={14} /> },
+  { id: 'sports-play',  label: 'Open sports-play.ts',  description: 'Sports I play',                   panel: 'sports-play',  icon: <FileCode2 size={14} /> },
+  { id: 'instruments',  label: 'Open instruments.ts',  description: 'Instruments I play',              panel: 'instruments',  icon: <FileCode2 size={14} /> },
+  { id: 'games',        label: 'Open games.ts',        description: 'Games I play (mobile & PC)',      panel: 'games',        icon: <FileCode2 size={14} /> },
+  { id: 'movies-tv',    label: 'Open movies-tv.ts',    description: 'Movies & TV shows I love',        panel: 'movies-tv',    icon: <FileCode2 size={14} /> },
+  { id: 'anime',        label: 'Open anime.ts',        description: 'Anime series and films',          panel: 'anime',        icon: <FileCode2 size={14} /> },
 ]
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onOpen }) => {

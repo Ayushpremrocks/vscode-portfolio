@@ -23,6 +23,12 @@ export type PanelName =
   | 'education'
   | 'contact'
   | 'resume'
+  | 'sports-watch'
+  | 'sports-play'
+  | 'instruments'
+  | 'games'
+  | 'movies-tv'
+  | 'anime'
 
 export interface Tab {
   id: string

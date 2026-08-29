@@ -25,6 +25,15 @@ const FILE_ENTRIES: { id: PanelName; name: string; icon?: React.ReactNode }[] = 
   { id: 'resume',     name: 'resume.ts' },
 ]
 
+const HOBBY_ENTRIES: { id: PanelName; name: string }[] = [
+  { id: 'sports-watch', name: 'sports-watch.ts' },
+  { id: 'sports-play',  name: 'sports-play.ts'  },
+  { id: 'instruments',  name: 'instruments.ts'  },
+  { id: 'games',        name: 'games.ts'        },
+  { id: 'movies-tv',    name: 'movies-tv.ts'    },
+  { id: 'anime',        name: 'anime.ts'        },
+]
+
 const SOCIAL_ENTRIES = [
   { id: 'github',   label: 'github.ts',   icon: <FaGithub   size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.github },
   { id: 'linkedin', label: 'linkedin.ts', icon: <FaLinkedin size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.linkedin },
@@ -35,6 +44,7 @@ const SOCIAL_ENTRIES = [
 export const Sidebar: React.FC<SidebarProps> = ({ activePanel, tabs, onFileClick }) => {
   const [openFiles, setOpenFiles]     = useState(true)
   const [openPortfolio, setOpenPortfolio] = useState(true)
+  const [openHobbies, setOpenHobbies] = useState(true)
   const [openSocial, setSocial]       = useState(true)
 
   return (
@@ -79,6 +89,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePanel, tabs, onFileClick
         onToggle={() => setOpenPortfolio(v => !v)}
       >
         {FILE_ENTRIES.map(f => (
+          <FileItem
+            key={f.id}
+            name={f.name}
+            isActive={activePanel === f.id}
+            onClick={() => onFileClick(f.id)}
+          />
+        ))}
+      </SidebarSection>
+
+      {/* HOBBIES */}
+      <SidebarSection
+        label="Hobbies"
+        open={openHobbies}
+        onToggle={() => setOpenHobbies(v => !v)}
+      >
+        {HOBBY_ENTRIES.map(f => (
           <FileItem
             key={f.id}
             name={f.name}
