@@ -1,30 +1,30 @@
 import { useState, useEffect } from 'react'
-import { TitleBar }       from './components/layout/TitleBar'
-import { MenuBar }        from './components/layout/MenuBar'
-import { ActivityBar }    from './components/layout/ActivityBar'
-import { Sidebar }        from './components/layout/Sidebar'
-import { TabBar }         from './components/layout/TabBar'
-import { EditorArea }     from './components/editor/EditorArea'
-import { Terminal }       from './components/layout/Terminal'
-import { StatusBar }      from './components/layout/StatusBar'
+import { TitleBar } from './components/layout/TitleBar'
+import { MenuBar } from './components/layout/MenuBar'
+import { ActivityBar } from './components/layout/ActivityBar'
+import { Sidebar } from './components/layout/Sidebar'
+import { TabBar } from './components/layout/TabBar'
+import { EditorArea } from './components/editor/EditorArea'
+import { Terminal } from './components/layout/Terminal'
+import { StatusBar } from './components/layout/StatusBar'
 import { CommandPalette } from './components/ui/CommandPalette'
-import { ThemeSwitcher }  from './components/ui/ThemeSwitcher'
-import { useFileSystem }  from './hooks/useFileSystem'
-import { useTerminal }    from './hooks/useTerminal'
-import { useTheme }       from './hooks/useTheme'
+import { ThemeSwitcher } from './components/ui/ThemeSwitcher'
+import { useFileSystem } from './hooks/useFileSystem'
+import { useTerminal } from './hooks/useTerminal'
+import { useTheme } from './hooks/useTheme'
 import type { PanelName } from './types'
 
 export default function App() {
   const { tabs, activePanel, openFile, closeTab, switchTab } = useFileSystem()
-  const { theme, setTheme }                                   = useTheme()
-  const { entries, runCommand, history }                      = useTerminal(openFile)
+  const { theme, setTheme } = useTheme()
+  const { entries, runCommand, history } = useTerminal(openFile)
 
-  const [activityActive, setActivityActive]   = useState('explorer')
-  const [sidebarOpen, setSidebarOpen]         = useState(true)
-  const [terminalOpen, setTerminalOpen]       = useState(true)
-  const [cmdPaletteOpen, setCmdPaletteOpen]   = useState(false)
+  const [activityActive, setActivityActive] = useState('explorer')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [terminalOpen, setTerminalOpen] = useState(true)
+  const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false)
   const [themeSwitcherOpen, setThemeSwitcher] = useState(false)
-  const [lineCount, setLineCount]             = useState(40)
+  const [lineCount, setLineCount] = useState(40)
 
   // Active tab name for title bar
   const activeTab = tabs.find(t => t.isActive)

@@ -16,44 +16,44 @@ interface SidebarProps {
 }
 
 const FILE_ENTRIES: { id: PanelName; name: string; icon?: React.ReactNode }[] = [
-  { id: 'about',      name: 'about.ts' },
-  { id: 'projects',   name: 'projects.ts' },
-  { id: 'skills',     name: 'skills.ts' },
+  { id: 'about', name: 'about.ts' },
+  { id: 'projects', name: 'projects.ts' },
+  { id: 'skills', name: 'skills.ts' },
   { id: 'experience', name: 'experience.ts' },
-  { id: 'education',  name: 'education.ts' },
-  { id: 'contact',    name: 'contact.ts' },
-  { id: 'resume',     name: 'resume.ts' },
+  { id: 'education', name: 'education.ts' },
+  { id: 'contact', name: 'contact.ts' },
+  { id: 'resume', name: 'resume.ts' },
 ]
 
 const HOBBY_ENTRIES: { id: PanelName; name: string }[] = [
   { id: 'sports-watch', name: 'sports-watch.ts' },
-  { id: 'sports-play',  name: 'sports-play.ts'  },
-  { id: 'instruments',  name: 'instruments.ts'  },
-  { id: 'games',        name: 'games.ts'        },
-  { id: 'movies-tv',    name: 'movies-tv.ts'    },
-  { id: 'anime',        name: 'anime.ts'        },
+  { id: 'sports-play', name: 'sports-play.ts' },
+  { id: 'instruments', name: 'instruments.ts' },
+  { id: 'games', name: 'games.ts' },
+  { id: 'movies-tv', name: 'movies-tv.ts' },
+  { id: 'anime', name: 'anime.ts' },
 ]
 
 const SOCIAL_ENTRIES = [
-  { id: 'github',   label: 'github.ts',   icon: <FaGithub   size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.github },
+  { id: 'github', label: 'github.ts', icon: <FaGithub size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.github },
   { id: 'linkedin', label: 'linkedin.ts', icon: <FaLinkedin size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.linkedin },
-  { id: 'twitter',  label: 'twitter.ts',  icon: <FaTwitter  size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.twitter },
-  { id: 'website',  label: 'website.ts',  icon: <Globe    size={14} />, url: portfolio.social.website },
+  { id: 'twitter', label: 'twitter.ts', icon: <FaTwitter size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.twitter },
+  { id: 'website', label: 'website.ts', icon: <Globe size={14} />, url: portfolio.social.website },
 ]
 
 export const Sidebar: React.FC<SidebarProps> = ({ activePanel, tabs, onFileClick }) => {
-  const [openFiles, setOpenFiles]     = useState(true)
+  const [openFiles, setOpenFiles] = useState(true)
   const [openPortfolio, setOpenPortfolio] = useState(true)
   const [openHobbies, setOpenHobbies] = useState(true)
-  const [openSocial, setSocial]       = useState(true)
+  const [openSocial, setSocial] = useState(true)
 
   return (
     <div
       className="flex flex-col w-60 shrink-0 overflow-y-auto text-xs select-none"
       style={{
-        background:  'var(--bg-sidebar)',
+        background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border)',
-        minHeight:   0,
+        minHeight: 0,
       }}
     >
       {/* Header */}
@@ -130,11 +130,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ activePanel, tabs, onFileClick
             style={{ color: 'var(--text-muted)' }}
             onMouseEnter={e => {
               e.currentTarget.style.background = 'var(--bg-hover)'
-              e.currentTarget.style.color      = 'var(--text)'
+              e.currentTarget.style.color = 'var(--text)'
             }}
             onMouseLeave={e => {
               e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color      = 'var(--text-muted)'
+              e.currentTarget.style.color = 'var(--text-muted)'
             }}
           >
             <span style={{ color: 'var(--text-dim)' }}>{s.icon}</span>
@@ -193,19 +193,19 @@ const FileItem: React.FC<{
     className="w-full flex items-center gap-2 pl-6 pr-3 py-1 transition-colors text-left"
     style={{
       background: isActive ? 'var(--bg-selected)' : 'transparent',
-      color:      isActive ? '#ffffff'            : 'var(--text-muted)',
-      boxShadow:  isActive ? 'inset 2px 0 0 0 var(--blue)' : 'none',
+      color: isActive ? '#ffffff' : 'var(--text-muted)',
+      boxShadow: isActive ? 'inset 2px 0 0 0 var(--blue)' : 'none',
     }}
     onMouseEnter={e => {
       if (!isActive) {
         e.currentTarget.style.background = 'var(--bg-hover)'
-        e.currentTarget.style.color      = 'var(--text)'
+        e.currentTarget.style.color = 'var(--text)'
       }
     }}
     onMouseLeave={e => {
       if (!isActive) {
         e.currentTarget.style.background = 'transparent'
-        e.currentTarget.style.color      = 'var(--text-muted)'
+        e.currentTarget.style.color = 'var(--text-muted)'
       }
     }}
   >

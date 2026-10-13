@@ -44,8 +44,8 @@ export const TitleBar: React.FC<TitleBarProps> = ({ activeFileName, onCommandPal
         className="flex items-center gap-2 px-3 py-0.5 rounded text-xs transition-all hover:opacity-80"
         style={{
           background: 'var(--bg-input)',
-          color:      'var(--text-muted)',
-          minWidth:   '220px',
+          color: 'var(--text-muted)',
+          minWidth: '220px',
         }}
         title="Open Command Palette (Ctrl+Shift+P)"
       >

@@ -8,11 +8,11 @@ import { Plus, Terminal as TermIcon, ChevronDown } from 'lucide-react'
 import type { TerminalEntry } from '../../types'
 
 interface TerminalProps {
-  entries:    TerminalEntry[]
-  onCommand:  (cmd: string) => void
-  history:    string[]
-  isOpen:     boolean
-  onToggle:   () => void
+  entries: TerminalEntry[]
+  onCommand: (cmd: string) => void
+  history: string[]
+  isOpen: boolean
+  onToggle: () => void
 }
 
 export const Terminal: React.FC<TerminalProps> = ({
@@ -22,10 +22,10 @@ export const Terminal: React.FC<TerminalProps> = ({
   isOpen,
   onToggle,
 }) => {
-  const [input, setInput]   = useState('')
+  const [input, setInput] = useState('')
   const [histIdx, setHistIdx] = useState(-1)
-  const bottomRef           = useRef<HTMLDivElement>(null)
-  const inputRef            = useRef<HTMLInputElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
 
   // Auto-scroll to bottom on new entries
   useEffect(() => {
@@ -57,7 +57,7 @@ export const Terminal: React.FC<TerminalProps> = ({
     } else if (e.key === 'Tab') {
       e.preventDefault()
       // Tab completion: find command starting with input
-      const CMDS = ['help','whoami','about','skills','projects','experience','education','contact','resume','ls','pwd','date','clear','sudo']
+      const CMDS = ['help', 'whoami', 'about', 'skills', 'projects', 'experience', 'education', 'contact', 'resume', 'ls', 'pwd', 'date', 'clear', 'sudo']
       const match = CMDS.find(c => c.startsWith(input.toLowerCase()))
       if (match) setInput(match)
     }
@@ -65,11 +65,11 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   const entryColor = (type: TerminalEntry['type']) => {
     switch (type) {
-      case 'input':   return 'var(--func)'
-      case 'error':   return 'var(--red)'
+      case 'input': return 'var(--func)'
+      case 'error': return 'var(--red)'
       case 'success': return 'var(--green)'
-      case 'info':    return 'var(--text-muted)'
-      default:        return 'var(--text)'
+      case 'info': return 'var(--text-muted)'
+      default: return 'var(--text)'
     }
   }
 
@@ -77,10 +77,10 @@ export const Terminal: React.FC<TerminalProps> = ({
     <div
       className="flex flex-col shrink-0"
       style={{
-        background:  'var(--bg-terminal)',
-        borderTop:   '1px solid var(--border)',
-        height:      isOpen ? '220px' : '28px',
-        transition:  'height 0.2s ease',
+        background: 'var(--bg-terminal)',
+        borderTop: '1px solid var(--border)',
+        height: isOpen ? '220px' : '28px',
+        transition: 'height 0.2s ease',
       }}
     >
       {/* Terminal header */}
@@ -114,7 +114,7 @@ export const Terminal: React.FC<TerminalProps> = ({
             <ChevronDown
               size={13}
               style={{
-                color:     'var(--text-muted)',
+                color: 'var(--text-muted)',
                 transform: isOpen ? 'rotate(0deg)' : 'rotate(180deg)',
                 transition: 'transform 0.2s',
               }}

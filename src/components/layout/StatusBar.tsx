@@ -4,9 +4,9 @@ import type { ThemeName } from '../../types'
 import { themes } from '../../styles/themes'
 
 interface StatusBarProps {
-  language:  string
+  language: string
   lineCount: number
-  theme:     ThemeName
+  theme: ThemeName
   onThemeClick: () => void
 }
 
@@ -26,14 +26,14 @@ export const StatusBar: React.FC<StatusBarProps> = ({ language, lineCount, theme
       className="flex items-center justify-between px-3 h-6 text-[11px] shrink-0 select-none"
       style={{
         background: 'var(--bg-statusbar)',
-        color:      '#fff',
+        color: '#fff',
       }}
     >
       {/* Left group */}
       <div className="flex items-center gap-0">
-        <StatusItem icon={<GitBranch size={12} />} label="main"     />
-        <StatusItem icon={<AlertCircle  size={12} />} label="0"     />
-        <StatusItem icon={<AlertTriangle size={12} />} label="0"    />
+        <StatusItem icon={<GitBranch size={12} />} label="main" />
+        <StatusItem icon={<AlertCircle size={12} />} label="0" />
+        <StatusItem icon={<AlertTriangle size={12} />} label="0" />
       </div>
 
       {/* Right group */}

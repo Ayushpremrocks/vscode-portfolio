@@ -16,14 +16,14 @@ export const ContactPanel: React.FC = () => {
   }
 
   const socials = [
-    { icon: <FaGithub size={16} />,   label: 'GitHub',   href: portfolio.social.github,   color: '#e8e8e8' },
+    { icon: <FaGithub size={16} />, label: 'GitHub', href: portfolio.social.github, color: '#e8e8e8' },
     { icon: <FaLinkedin size={16} />, label: 'LinkedIn', href: portfolio.social.linkedin, color: '#0a66c2' },
-    { icon: <FaTwitter size={16} />,  label: 'Twitter',  href: portfolio.social.twitter,  color: '#1d9bf0' },
+    { icon: <FaTwitter size={16} />, label: 'Twitter', href: portfolio.social.twitter, color: '#1d9bf0' },
     ...(portfolio.social.website ? [{ icon: <Globe size={16} />, label: 'Website', href: portfolio.social.website, color: 'var(--blue)' }] : []),
   ]
 
   const infoItems = [
-    { icon: <Mail size={14} />,   label: 'Email',    value: portfolio.email,    href: `mailto:${portfolio.email}` },
+    { icon: <Mail size={14} />, label: 'Email', value: portfolio.email, href: `mailto:${portfolio.email}` },
     { icon: <MapPin size={14} />, label: 'Location', value: portfolio.location, href: undefined },
   ]
 

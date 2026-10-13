@@ -1,26 +1,26 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import type { PanelName } from '../../types'
-import { WelcomePanel }      from '../panels/WelcomePanel'
-import { AboutPanel }        from '../panels/AboutPanel'
-import { ProjectsPanel }     from '../panels/ProjectsPanel'
-import { SkillsPanel }       from '../panels/SkillsPanel'
-import { ExperiencePanel }   from '../panels/ExperiencePanel'
-import { EducationPanel }    from '../panels/EducationPanel'
-import { ContactPanel }      from '../panels/ContactPanel'
-import { ResumePanel }       from '../panels/ResumePanel'
-import { SportsWatchPanel }  from '../panels/SportsWatchPanel'
-import { SportsPlayPanel }   from '../panels/SportsPlayPanel'
-import { InstrumentsPanel }  from '../panels/InstrumentsPanel'
-import { GamesPanel }        from '../panels/GamesPanel'
-import { MoviesTVPanel }     from '../panels/MoviesTVPanel'
-import { AnimePanel }        from '../panels/AnimePanel'
-import { Minimap }         from '../ui/Minimap'
+import { WelcomePanel } from '../panels/WelcomePanel'
+import { AboutPanel } from '../panels/AboutPanel'
+import { ProjectsPanel } from '../panels/ProjectsPanel'
+import { SkillsPanel } from '../panels/SkillsPanel'
+import { ExperiencePanel } from '../panels/ExperiencePanel'
+import { EducationPanel } from '../panels/EducationPanel'
+import { ContactPanel } from '../panels/ContactPanel'
+import { ResumePanel } from '../panels/ResumePanel'
+import { SportsWatchPanel } from '../panels/SportsWatchPanel'
+import { SportsPlayPanel } from '../panels/SportsPlayPanel'
+import { InstrumentsPanel } from '../panels/InstrumentsPanel'
+import { GamesPanel } from '../panels/GamesPanel'
+import { MoviesTVPanel } from '../panels/MoviesTVPanel'
+import { AnimePanel } from '../panels/AnimePanel'
+import { Minimap } from '../ui/Minimap'
 
 interface EditorAreaProps {
-  panel:         PanelName | null
-  onLineCount:   (n: number) => void
-  onOpenFile:    (panel: PanelName) => void
+  panel: PanelName | null
+  onLineCount: (n: number) => void
+  onOpenFile: (panel: PanelName) => void
 }
 
 export const EditorArea: React.FC<EditorAreaProps> = ({ panel, onLineCount, onOpenFile }) => {
@@ -28,20 +28,20 @@ export const EditorArea: React.FC<EditorAreaProps> = ({ panel, onLineCount, onOp
   const [lineCount, setLineCount] = useState(40)
 
   const PANEL_MAP: Record<PanelName, React.ReactNode> = {
-    welcome:        <WelcomePanel onOpenFile={onOpenFile} />,
-    about:          <AboutPanel />,
-    projects:       <ProjectsPanel />,
-    skills:         <SkillsPanel />,
-    experience:     <ExperiencePanel />,
-    education:      <EducationPanel />,
-    contact:        <ContactPanel />,
-    resume:         <ResumePanel />,
+    welcome: <WelcomePanel onOpenFile={onOpenFile} />,
+    about: <AboutPanel />,
+    projects: <ProjectsPanel />,
+    skills: <SkillsPanel />,
+    experience: <ExperiencePanel />,
+    education: <EducationPanel />,
+    contact: <ContactPanel />,
+    resume: <ResumePanel />,
     'sports-watch': <SportsWatchPanel />,
-    'sports-play':  <SportsPlayPanel />,
-    instruments:    <InstrumentsPanel />,
-    games:          <GamesPanel />,
-    'movies-tv':    <MoviesTVPanel />,
-    anime:          <AnimePanel />,
+    'sports-play': <SportsPlayPanel />,
+    instruments: <InstrumentsPanel />,
+    games: <GamesPanel />,
+    'movies-tv': <MoviesTVPanel />,
+    anime: <AnimePanel />,
   }
 
   // Count approximate lines for status bar
@@ -93,11 +93,11 @@ const LineGutter: React.FC<{ count: number }> = ({ count }) => {
     <div
       className="shrink-0 px-3 py-4 text-right font-mono text-xs select-none overflow-hidden"
       style={{
-        color:       'var(--text-line)',
-        background:  'var(--bg-editor)',
+        color: 'var(--text-line)',
+        background: 'var(--bg-editor)',
         borderRight: '1px solid var(--border)',
-        minWidth:    '48px',
-        lineHeight:  '1.6',
+        minWidth: '48px',
+        lineHeight: '1.6',
       }}
     >
       {lines.map(n => (

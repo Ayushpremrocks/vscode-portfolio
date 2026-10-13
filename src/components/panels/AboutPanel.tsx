@@ -6,16 +6,16 @@ import { portfolio } from '../../data/portfolio'
 
 export const AboutPanel: React.FC = () => {
   const infoCards = [
-    { icon: <MapPin size={14} />,      label: 'Location',     value: portfolio.location,   href: undefined },
-    { icon: <Mail size={14} />,        label: 'Email',        value: portfolio.email,      href: `mailto:${portfolio.email}` },
-    { icon: <Calendar size={14} />,    label: 'Availability', value: 'Open to work',       href: undefined },
-    { icon: <Globe size={14} />,       label: 'Website',      value: portfolio.social.website, href: portfolio.social.website },
+    { icon: <MapPin size={14} />, label: 'Location', value: portfolio.location, href: undefined },
+    { icon: <Mail size={14} />, label: 'Email', value: portfolio.email, href: `mailto:${portfolio.email}` },
+    { icon: <Calendar size={14} />, label: 'Availability', value: 'Open to work', href: undefined },
+    { icon: <Globe size={14} />, label: 'Website', value: portfolio.social.website, href: portfolio.social.website },
   ]
 
   const socials = [
-    { icon: <FaGithub size={15} />,   label: 'GitHub',   href: portfolio.social.github   },
+    { icon: <FaGithub size={15} />, label: 'GitHub', href: portfolio.social.github },
     { icon: <FaLinkedin size={15} />, label: 'LinkedIn', href: portfolio.social.linkedin },
-    { icon: <FaTwitter size={15} />,  label: 'Twitter',  href: portfolio.social.twitter  },
+    { icon: <FaTwitter size={15} />, label: 'Twitter', href: portfolio.social.twitter },
   ]
 
   return (

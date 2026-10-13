@@ -5,15 +5,15 @@ import type { Tab } from '../../types'
 interface TabBarProps {
   tabs: Tab[]
   onSwitch: (tabId: string) => void
-  onClose:  (tabId: string) => void
+  onClose: (tabId: string) => void
 }
 
 export const TabBar: React.FC<TabBarProps> = ({ tabs, onSwitch, onClose }) => {
   return (
     <div
       className="flex items-end overflow-x-auto shrink-0 h-9 relative z-10"
-      style={{ 
-        background: 'var(--bg-tab-inactive)', 
+      style={{
+        background: 'var(--bg-tab-inactive)',
         borderBottom: '1px solid var(--border)',
         boxShadow: '0 4px 6px -4px rgba(0, 0, 0, 0.3)'
       }}
@@ -30,7 +30,7 @@ export const TabBar: React.FC<TabBarProps> = ({ tabs, onSwitch, onClose }) => {
 const TabItem: React.FC<{
   tab: Tab
   onSwitch: (id: string) => void
-  onClose:  (id: string) => void
+  onClose: (id: string) => void
 }> = ({ tab, onSwitch, onClose }) => {
   return (
     <button
@@ -38,12 +38,12 @@ const TabItem: React.FC<{
       onClick={() => onSwitch(tab.id)}
       className="group flex items-center gap-1.5 px-3 h-full text-xs shrink-0 transition-all relative border-r"
       style={{
-        background:   tab.isActive ? 'var(--bg-tab-active)' : 'var(--bg-tab-inactive)',
-        color:        tab.isActive ? 'var(--text)' : 'var(--text-muted)',
-        borderColor:  'var(--border)',
-        borderTop:    tab.isActive ? '1px solid var(--blue)' : '1px solid transparent',
-        minWidth:     '100px',
-        maxWidth:     '200px',
+        background: tab.isActive ? 'var(--bg-tab-active)' : 'var(--bg-tab-inactive)',
+        color: tab.isActive ? 'var(--text)' : 'var(--text-muted)',
+        borderColor: 'var(--border)',
+        borderTop: tab.isActive ? '1px solid var(--blue)' : '1px solid transparent',
+        minWidth: '100px',
+        maxWidth: '200px',
       }}
       title={tab.name}
       aria-label={`Open ${tab.name}`}

@@ -9,20 +9,20 @@ import {
 } from 'lucide-react'
 
 type ActivityItem = {
-  id:    string
-  icon:  React.ReactNode
+  id: string
+  icon: React.ReactNode
   label: string
 }
 
 const TOP_ITEMS: ActivityItem[] = [
-  { id: 'explorer',    icon: <Files size={22} />,      label: 'Explorer' },
-  { id: 'search',      icon: <Search size={22} />,     label: 'Search' },
-  { id: 'git',         icon: <GitBranch size={22} />,  label: 'Source Control' },
-  { id: 'extensions',  icon: <Package size={22} />,    label: 'Extensions' },
+  { id: 'explorer', icon: <Files size={22} />, label: 'Explorer' },
+  { id: 'search', icon: <Search size={22} />, label: 'Search' },
+  { id: 'git', icon: <GitBranch size={22} />, label: 'Source Control' },
+  { id: 'extensions', icon: <Package size={22} />, label: 'Extensions' },
 ]
 
 const BOTTOM_ITEMS: ActivityItem[] = [
-  { id: 'account',  icon: <User size={22} />,     label: 'Account' },
+  { id: 'account', icon: <User size={22} />, label: 'Account' },
   { id: 'settings', icon: <Settings size={22} />, label: 'Settings' },
 ]
 
@@ -36,8 +36,8 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({ active, onSelect }) =>
     <div
       className="flex flex-col items-center w-12 shrink-0 py-1"
       style={{
-        background:   'var(--bg-actbar)',
-        borderRight:  '1px solid var(--border)',
+        background: 'var(--bg-actbar)',
+        borderRight: '1px solid var(--border)',
       }}
     >
       <div className="flex flex-col gap-1 flex-1">
@@ -56,7 +56,7 @@ export const ActivityBar: React.FC<ActivityBarProps> = ({ active, onSelect }) =>
             key={item.id}
             item={item}
             isActive={false}
-            onClick={() => {}}
+            onClick={() => { }}
           />
         ))}
       </div>
@@ -75,8 +75,8 @@ const ActivityButton: React.FC<{
     onClick={onClick}
     className="relative w-12 h-12 flex items-center justify-center transition-all group"
     style={{
-      color:       isActive ? 'var(--text)' : 'var(--text-muted)',
-      borderLeft:  isActive ? '2px solid var(--blue)' : '2px solid transparent',
+      color: isActive ? 'var(--text)' : 'var(--text-muted)',
+      borderLeft: isActive ? '2px solid var(--blue)' : '2px solid transparent',
     }}
   >
     <span className={`transition-opacity ${isActive ? 'opacity-100' : 'opacity-40 group-hover:opacity-100'}`}>
@@ -87,8 +87,8 @@ const ActivityButton: React.FC<{
       className="absolute left-14 px-2 py-1 text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-50"
       style={{
         background: '#252526',
-        color:      'var(--text)',
-        border:     '1px solid var(--border)',
+        color: 'var(--text)',
+        border: '1px solid var(--border)',
       }}
     >
       {item.label}

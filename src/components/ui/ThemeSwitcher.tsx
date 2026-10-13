@@ -5,16 +5,16 @@ import type { ThemeName } from '../../types'
 import { themes } from '../../styles/themes'
 
 interface ThemeSwitcherProps {
-  current:  ThemeName
-  isOpen:   boolean
+  current: ThemeName
+  isOpen: boolean
   onSelect: (theme: ThemeName) => void
-  onClose:  () => void
+  onClose: () => void
 }
 
 const THEME_PREVIEWS: Record<ThemeName, { bg: string; sidebar: string; accent: string }> = {
   'one-dark-pro': { bg: '#1e1e2e', sidebar: '#252526', accent: '#569cd6' },
-  'github-dark':  { bg: '#0d1117', sidebar: '#161b22', accent: '#58a6ff' },
-  'dracula':      { bg: '#282a36', sidebar: '#21222c', accent: '#bd93f9' },
+  'github-dark': { bg: '#0d1117', sidebar: '#161b22', accent: '#58a6ff' },
+  'dracula': { bg: '#282a36', sidebar: '#21222c', accent: '#bd93f9' },
 }
 
 export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ current, isOpen, onSelect, onClose }) => {
@@ -28,14 +28,14 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ current, isOpen, o
           {/* Switcher popup */}
           <motion.div
             initial={{ opacity: 0, y: 10, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0,  scale: 1 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
             className="fixed z-[200] bottom-8 right-4 rounded-md overflow-hidden shadow-2xl"
             style={{
-              minWidth:  '240px',
-              background:'var(--bg-sidebar)',
-              border:    '1px solid var(--border)',
+              minWidth: '240px',
+              background: 'var(--bg-sidebar)',
+              border: '1px solid var(--border)',
             }}
             id="theme-switcher"
             role="listbox"
@@ -64,7 +64,7 @@ export const ThemeSwitcher: React.FC<ThemeSwitcherProps> = ({ current, isOpen, o
                     className="w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors"
                     style={{
                       background: isActive ? 'var(--bg-selected)' : 'transparent',
-                      color:      'var(--text)',
+                      color: 'var(--text)',
                     }}
                     onMouseEnter={e => {
                       if (!isActive) e.currentTarget.style.background = 'var(--bg-hover)'

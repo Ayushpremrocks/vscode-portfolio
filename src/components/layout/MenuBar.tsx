@@ -3,14 +3,14 @@ import React, { useState } from 'react'
 const MENUS = ['File', 'Edit', 'Selection', 'View', 'Go', 'Run', 'Terminal', 'Help']
 
 const MENU_ITEMS: Record<string, string[]> = {
-  File:      ['New File', 'New Window', '─', 'Open...', 'Close Editor', '─', 'Save', 'Save As…'],
-  Edit:      ['Undo', 'Redo', '─', 'Cut', 'Copy', 'Paste', '─', 'Find', 'Replace'],
+  File: ['New File', 'New Window', '─', 'Open...', 'Close Editor', '─', 'Save', 'Save As…'],
+  Edit: ['Undo', 'Redo', '─', 'Cut', 'Copy', 'Paste', '─', 'Find', 'Replace'],
   Selection: ['Select All', 'Expand Selection', '─', 'Add Cursor Above', 'Add Cursor Below'],
-  View:      ['Explorer', 'Search', 'Source Control', '─', 'Terminal', 'Problems', 'Output'],
-  Go:        ['Back', 'Forward', '─', 'Go to File…', 'Go to Line/Column…', '─', 'Go to Definition'],
-  Run:       ['Start Debugging', 'Run Without Debugging', '─', 'Toggle Breakpoint'],
-  Terminal:  ['New Terminal', 'Split Terminal', '─', 'Run Task…', 'Run Build Task…'],
-  Help:      ['Welcome', 'Documentation', '─', 'Keyboard Shortcuts', '─', 'About'],
+  View: ['Explorer', 'Search', 'Source Control', '─', 'Terminal', 'Problems', 'Output'],
+  Go: ['Back', 'Forward', '─', 'Go to File…', 'Go to Line/Column…', '─', 'Go to Definition'],
+  Run: ['Start Debugging', 'Run Without Debugging', '─', 'Toggle Breakpoint'],
+  Terminal: ['New Terminal', 'Split Terminal', '─', 'Run Task…', 'Run Build Task…'],
+  Help: ['Welcome', 'Documentation', '─', 'Keyboard Shortcuts', '─', 'About'],
 }
 
 export const MenuBar: React.FC = () => {
@@ -27,7 +27,7 @@ export const MenuBar: React.FC = () => {
           <button
             className="px-2.5 py-0.5 rounded-sm transition-colors relative"
             style={{
-              color:      open === menu ? 'var(--text)' : 'var(--text-muted)',
+              color: open === menu ? 'var(--text)' : 'var(--text-muted)',
               background: open === menu ? 'var(--bg-hover)' : 'transparent',
             }}
             onMouseEnter={() => open && setOpen(menu)}

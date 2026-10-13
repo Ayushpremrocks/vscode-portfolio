@@ -6,7 +6,7 @@ import { portfolio } from '../../data/portfolio'
 
 export const ProjectsPanel: React.FC = () => {
   const featured = portfolio.projects.filter(p => p.featured)
-  const others   = portfolio.projects.filter(p => !p.featured)
+  const others = portfolio.projects.filter(p => !p.featured)
 
   return (
     <div
