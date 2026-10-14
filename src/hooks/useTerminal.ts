@@ -79,7 +79,7 @@ function buildOutput(openFile: OpenFileFn): Record<string, () => TerminalEntry[]
         { id: id(), type: 'output', content: `<span style="color:var(--func)">Projects (${portfolio.projects.length}):</span>` },
       ]
       portfolio.projects.forEach((p, i) => {
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--type)">${i + 1}. ${p.name}</span>` })
+        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--type)">${i + 1}. ${p.name}</span> <span style="color:var(--keyword)">[${p.category}]</span>` })
         entries.push({ id: id(), type: 'output', content: `     <span style="color:var(--text-muted)">${p.description}</span>` })
         entries.push({ id: id(), type: 'output', content: `     <span style="color:var(--comment)">${p.tech.join(' · ')}</span>` })
       })
