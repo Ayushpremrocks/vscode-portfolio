@@ -13,6 +13,8 @@ interface TerminalProps {
   history: string[]
   isOpen: boolean
   onToggle: () => void
+  height?: number
+  onHeightChange?: (height: number) => void
 }
 
 export const Terminal: React.FC<TerminalProps> = ({
@@ -21,11 +23,59 @@ export const Terminal: React.FC<TerminalProps> = ({
   history,
   isOpen,
   onToggle,
+  height = 220,
+  onHeightChange,
 }) => {
   const [input, setInput] = useState('')
   const [histIdx, setHistIdx] = useState(-1)
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+
+  const [isHovered, setIsHovered] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const isDraggingRef = useRef(false)
+  const dragStartYRef = useRef(0)
+  const dragStartHeightRef = useRef(height)
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return
+    e.preventDefault()
+    e.stopPropagation()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    isDraggingRef.current = true
+    setIsDragging(true)
+    dragStartYRef.current = e.clientY
+    dragStartHeightRef.current = height
+    document.body.style.cursor = 'row-resize'
+    document.body.style.userSelect = 'none'
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !onHeightChange) return
+    const deltaY = dragStartYRef.current - e.clientY
+    const newHeight = dragStartHeightRef.current + deltaY
+    const maxHeight = Math.floor(window.innerHeight * 0.7)
+    const clamped = Math.min(Math.max(newHeight, 100), maxHeight)
+    onHeightChange(clamped)
+  }
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    setIsDragging(false)
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    } catch {}
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [])
 
   // Auto-scroll to bottom on new entries
   useEffect(() => {
@@ -75,14 +125,34 @@ export const Terminal: React.FC<TerminalProps> = ({
 
   return (
     <div
-      className="flex flex-col shrink-0"
+      className="relative flex flex-col shrink-0"
       style={{
         background: 'var(--bg-terminal)',
         borderTop: '1px solid var(--border)',
-        height: isOpen ? '220px' : '28px',
-        transition: 'height 0.2s ease',
+        height: isOpen ? `${height}px` : '28px',
+        transition: isDragging ? 'none' : 'height 0.2s ease',
       }}
     >
+      {/* Horizontal Drag Handle */}
+      {isOpen && onHeightChange && (
+        <div
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onPointerEnter={() => setIsHovered(true)}
+          onPointerLeave={() => setIsHovered(false)}
+          onClick={e => e.stopPropagation()}
+          className="absolute left-0 right-0 z-30 transition-colors"
+          style={{
+            top: '-2px',
+            height: '4px',
+            cursor: 'row-resize',
+            background: isDragging || isHovered ? 'var(--blue)' : 'transparent',
+          }}
+          title="Drag to resize terminal"
+        />
+      )}
       {/* Terminal header */}
       <div
         className="flex items-center gap-2 px-3 h-7 shrink-0 cursor-pointer select-none"

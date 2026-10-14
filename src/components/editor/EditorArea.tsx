@@ -15,7 +15,6 @@ import { InstrumentsPanel } from '../panels/InstrumentsPanel'
 import { GamesPanel } from '../panels/GamesPanel'
 import { MoviesTVPanel } from '../panels/MoviesTVPanel'
 import { AnimePanel } from '../panels/AnimePanel'
-import { Minimap } from '../ui/Minimap'
 
 interface EditorAreaProps {
   panel: PanelName | null
@@ -78,9 +77,6 @@ export const EditorArea: React.FC<EditorAreaProps> = ({ panel, onLineCount, onOp
           )}
         </AnimatePresence>
       </div>
-
-      {/* Minimap */}
-      {panel && panel !== 'welcome' && <Minimap panel={panel} lineCount={lineCount} />}
     </div>
   )
 }

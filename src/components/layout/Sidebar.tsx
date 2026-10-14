@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronRight,
@@ -11,8 +11,10 @@ import { portfolio } from '../../data/portfolio'
 
 interface SidebarProps {
   activePanel: PanelName | null
-  tabs: Tab[]
+  tabs?: Tab[]
   onFileClick: (panel: PanelName) => void
+  width?: number
+  onWidthChange?: (width: number) => void
 }
 
 const FILE_ENTRIES: { id: PanelName; name: string; icon?: React.ReactNode }[] = [
@@ -41,107 +43,163 @@ const SOCIAL_ENTRIES = [
   { id: 'website', label: 'website.ts', icon: <Globe size={14} />, url: portfolio.social.website },
 ]
 
-export const Sidebar: React.FC<SidebarProps> = ({ activePanel, tabs, onFileClick }) => {
-  const [openFiles, setOpenFiles] = useState(true)
+export const Sidebar: React.FC<SidebarProps> = ({
+  activePanel,
+  onFileClick,
+  width = 240,
+  onWidthChange,
+}) => {
   const [openPortfolio, setOpenPortfolio] = useState(true)
   const [openHobbies, setOpenHobbies] = useState(true)
   const [openSocial, setSocial] = useState(true)
 
+  const [isHovered, setIsHovered] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const isDraggingRef = useRef(false)
+  const dragStartXRef = useRef(0)
+  const dragStartWidthRef = useRef(width)
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    isDraggingRef.current = true
+    setIsDragging(true)
+    dragStartXRef.current = e.clientX
+    dragStartWidthRef.current = width
+    document.body.style.cursor = 'col-resize'
+    document.body.style.userSelect = 'none'
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !onWidthChange) return
+    const deltaX = e.clientX - dragStartXRef.current
+    const newWidth = dragStartWidthRef.current + deltaX
+    const maxWidth = Math.floor(window.innerWidth * 0.5)
+    const clamped = Math.min(Math.max(newWidth, 170), maxWidth)
+    onWidthChange(clamped)
+  }
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    setIsDragging(false)
+    try {
+      e.currentTarget.releasePointerCapture(e.pointerId)
+    } catch {}
+    document.body.style.cursor = ''
+    document.body.style.userSelect = ''
+  }
+
+  useEffect(() => {
+    return () => {
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
+    }
+  }, [])
+
   return (
     <div
-      className="flex flex-col w-60 shrink-0 overflow-y-auto text-xs select-none"
+      className="relative flex flex-col shrink-0 text-xs select-none"
       style={{
+        width: `${width}px`,
         background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border)',
         minHeight: 0,
+        height: '100%',
       }}
     >
-      {/* Header */}
-      <div
-        className="px-4 py-1.5 text-[10px] font-semibold tracking-widest uppercase"
-        style={{ color: 'var(--text-muted)' }}
-      >
-        Explorer
-      </div>
-
-      {/* OPEN FILES */}
-      {tabs.length > 0 && (
-        <SidebarSection
-          label="Open Files"
-          open={openFiles}
-          onToggle={() => setOpenFiles(v => !v)}
+      {/* Scrollable Explorer content */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
+        {/* Header */}
+        <div
+          className="px-4 py-1.5 text-[10px] font-semibold tracking-widest uppercase"
+          style={{ color: 'var(--text-muted)' }}
         >
-          {tabs.map(t => (
+          Explorer
+        </div>
+
+        {/* PORTFOLIO (AYUSH PREM) */}
+        <SidebarSection
+          label={portfolio.name}
+          open={openPortfolio}
+          onToggle={() => setOpenPortfolio(v => !v)}
+        >
+          {FILE_ENTRIES.map(f => (
             <FileItem
-              key={t.id}
-              name={t.name}
-              isActive={activePanel === t.fileId}
-              onClick={() => onFileClick(t.fileId as PanelName)}
+              key={f.id}
+              name={f.name}
+              isActive={activePanel === f.id}
+              onClick={() => onFileClick(f.id)}
             />
           ))}
         </SidebarSection>
+
+        {/* HOBBIES */}
+        <SidebarSection
+          label="Hobbies"
+          open={openHobbies}
+          onToggle={() => setOpenHobbies(v => !v)}
+        >
+          {HOBBY_ENTRIES.map(f => (
+            <FileItem
+              key={f.id}
+              name={f.name}
+              isActive={activePanel === f.id}
+              onClick={() => onFileClick(f.id)}
+            />
+          ))}
+        </SidebarSection>
+
+        {/* SOCIAL */}
+        <SidebarSection
+          label="Social"
+          open={openSocial}
+          onToggle={() => setSocial(v => !v)}
+        >
+          {SOCIAL_ENTRIES.map(s => (
+            <a
+              key={s.id}
+              href={s.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-1 cursor-pointer transition-colors"
+              style={{ color: 'var(--text-muted)' }}
+              onMouseEnter={e => {
+                e.currentTarget.style.background = 'var(--bg-hover)'
+                e.currentTarget.style.color = 'var(--text)'
+              }}
+              onMouseLeave={e => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = 'var(--text-muted)'
+              }}
+            >
+              <span style={{ color: 'var(--text-dim)' }}>{s.icon}</span>
+              <span>{s.label}</span>
+            </a>
+          ))}
+        </SidebarSection>
+      </div>
+
+      {/* Resize Handle */}
+      {onWidthChange && (
+        <div
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onPointerEnter={() => setIsHovered(true)}
+          onPointerLeave={() => setIsHovered(false)}
+          className="absolute top-0 right-0 bottom-0 z-30 transition-colors"
+          style={{
+            width: '4px',
+            marginRight: '-2px',
+            cursor: 'col-resize',
+            background: isDragging || isHovered ? 'var(--blue)' : 'transparent',
+          }}
+          title="Drag to resize sidebar"
+        />
       )}
-
-      {/* PORTFOLIO */}
-      <SidebarSection
-        label={portfolio.name}
-        open={openPortfolio}
-        onToggle={() => setOpenPortfolio(v => !v)}
-      >
-        {FILE_ENTRIES.map(f => (
-          <FileItem
-            key={f.id}
-            name={f.name}
-            isActive={activePanel === f.id}
-            onClick={() => onFileClick(f.id)}
-          />
-        ))}
-      </SidebarSection>
-
-      {/* HOBBIES */}
-      <SidebarSection
-        label="Hobbies"
-        open={openHobbies}
-        onToggle={() => setOpenHobbies(v => !v)}
-      >
-        {HOBBY_ENTRIES.map(f => (
-          <FileItem
-            key={f.id}
-            name={f.name}
-            isActive={activePanel === f.id}
-            onClick={() => onFileClick(f.id)}
-          />
-        ))}
-      </SidebarSection>
-
-      {/* SOCIAL */}
-      <SidebarSection
-        label="Social"
-        open={openSocial}
-        onToggle={() => setSocial(v => !v)}
-      >
-        {SOCIAL_ENTRIES.map(s => (
-          <a
-            key={s.id}
-            href={s.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-4 py-1 cursor-pointer transition-colors"
-            style={{ color: 'var(--text-muted)' }}
-            onMouseEnter={e => {
-              e.currentTarget.style.background = 'var(--bg-hover)'
-              e.currentTarget.style.color = 'var(--text)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.background = 'transparent'
-              e.currentTarget.style.color = 'var(--text-muted)'
-            }}
-          >
-            <span style={{ color: 'var(--text-dim)' }}>{s.icon}</span>
-            <span>{s.label}</span>
-          </a>
-        ))}
-      </SidebarSection>
     </div>
   )
 }

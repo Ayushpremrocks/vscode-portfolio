@@ -26,6 +26,63 @@ export default function App() {
   const [themeSwitcherOpen, setThemeSwitcher] = useState(false)
   const [lineCount, setLineCount] = useState(40)
 
+  // Resizable sidebar width with localStorage persistence
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    try {
+      const saved = localStorage.getItem('vscode-portfolio-sidebar-width')
+      if (saved) {
+        const val = parseInt(saved, 10)
+        if (!isNaN(val)) {
+          const maxWidth = typeof window !== 'undefined' ? Math.floor(window.innerWidth * 0.5) : 600
+          return Math.min(Math.max(val, 170), maxWidth)
+        }
+      }
+    } catch {}
+    return 240
+  })
+
+  // Resizable terminal height with localStorage persistence
+  const [terminalHeight, setTerminalHeight] = useState(() => {
+    try {
+      const saved = localStorage.getItem('vscode-portfolio-terminal-height')
+      if (saved) {
+        const val = parseInt(saved, 10)
+        if (!isNaN(val)) {
+          const maxHeight = typeof window !== 'undefined' ? Math.floor(window.innerHeight * 0.7) : 500
+          return Math.min(Math.max(val, 100), maxHeight)
+        }
+      }
+    } catch {}
+    return 220
+  })
+
+  // Persist sidebar width
+  useEffect(() => {
+    try {
+      localStorage.setItem('vscode-portfolio-sidebar-width', sidebarWidth.toString())
+    } catch {}
+  }, [sidebarWidth])
+
+  // Persist terminal height
+  useEffect(() => {
+    try {
+      localStorage.setItem('vscode-portfolio-terminal-height', terminalHeight.toString())
+    } catch {}
+  }, [terminalHeight])
+
+  // Window resize handler to clamp dimensions
+  useEffect(() => {
+    const handleResize = () => {
+      const maxWidth = Math.floor(window.innerWidth * 0.5)
+      setSidebarWidth(prev => Math.min(Math.max(prev, 170), maxWidth))
+
+      const maxHeight = Math.floor(window.innerHeight * 0.7)
+      setTerminalHeight(prev => Math.min(Math.max(prev, 100), maxHeight))
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   // Active tab name for title bar
   const activeTab = tabs.find(t => t.isActive)
 
@@ -93,12 +150,14 @@ export default function App() {
           onSelect={handleActivitySelect}
         />
 
-        {/* Sidebar (Explorer) — collapsible */}
+        {/* Sidebar (Explorer) — collapsible & resizable */}
         {sidebarOpen && (
           <Sidebar
             activePanel={activePanel}
             tabs={tabs}
             onFileClick={openFile}
+            width={sidebarWidth}
+            onWidthChange={setSidebarWidth}
           />
         )}
 
@@ -127,6 +186,8 @@ export default function App() {
               history={history}
               isOpen={terminalOpen}
               onToggle={() => setTerminalOpen(v => !v)}
+              height={terminalHeight}
+              onHeightChange={setTerminalHeight}
             />
           </div>
         </div>
