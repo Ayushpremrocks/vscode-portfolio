@@ -19,7 +19,6 @@ export default function App() {
   const { theme, setTheme } = useTheme()
   const { entries, runCommand, history } = useTerminal(openFile)
 
-  const [activityActive, setActivityActive] = useState('explorer')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [terminalOpen, setTerminalOpen] = useState(true)
   const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false)
@@ -110,14 +109,7 @@ export default function App() {
 
   const handleActivitySelect = (id: string) => {
     if (id === 'explorer') {
-      if (activityActive === 'explorer') {
-        setSidebarOpen(v => !v)
-      } else {
-        setSidebarOpen(true)
-        setActivityActive(id)
-      }
-    } else {
-      setActivityActive(id)
+      setSidebarOpen(v => !v)
     }
   }
 
@@ -146,7 +138,7 @@ export default function App() {
 
         {/* Activity Bar */}
         <ActivityBar
-          active={activityActive}
+          active={sidebarOpen ? 'explorer' : ''}
           onSelect={handleActivitySelect}
         />
 

@@ -3,9 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   ChevronRight,
   FileCode2,
-  Globe,
 } from 'lucide-react'
-import { FaGithub, FaLinkedin, FaTwitter } from 'react-icons/fa'
 import type { PanelName, Tab } from '../../types'
 import { portfolio } from '../../data/portfolio'
 
@@ -36,13 +34,6 @@ const HOBBY_ENTRIES: { id: PanelName; name: string }[] = [
   { id: 'anime', name: 'anime.ts' },
 ]
 
-const SOCIAL_ENTRIES = [
-  { id: 'github', label: 'github.ts', icon: <FaGithub size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.github },
-  { id: 'linkedin', label: 'linkedin.ts', icon: <FaLinkedin size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.linkedin },
-  { id: 'twitter', label: 'twitter.ts', icon: <FaTwitter size={14} style={{ color: 'var(--text-muted)' }} />, url: portfolio.social.twitter },
-  { id: 'website', label: 'website.ts', icon: <Globe size={14} />, url: portfolio.social.website },
-]
-
 export const Sidebar: React.FC<SidebarProps> = ({
   activePanel,
   onFileClick,
@@ -51,7 +42,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const [openPortfolio, setOpenPortfolio] = useState(true)
   const [openHobbies, setOpenHobbies] = useState(true)
-  const [openSocial, setSocial] = useState(true)
 
   const [isHovered, setIsHovered] = useState(false)
   const [isDragging, setIsDragging] = useState(false)
@@ -148,35 +138,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
               isActive={activePanel === f.id}
               onClick={() => onFileClick(f.id)}
             />
-          ))}
-        </SidebarSection>
-
-        {/* SOCIAL */}
-        <SidebarSection
-          label="Social"
-          open={openSocial}
-          onToggle={() => setSocial(v => !v)}
-        >
-          {SOCIAL_ENTRIES.map(s => (
-            <a
-              key={s.id}
-              href={s.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-4 py-1 cursor-pointer transition-colors"
-              style={{ color: 'var(--text-muted)' }}
-              onMouseEnter={e => {
-                e.currentTarget.style.background = 'var(--bg-hover)'
-                e.currentTarget.style.color = 'var(--text)'
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = 'var(--text-muted)'
-              }}
-            >
-              <span style={{ color: 'var(--text-dim)' }}>{s.icon}</span>
-              <span>{s.label}</span>
-            </a>
           ))}
         </SidebarSection>
       </div>

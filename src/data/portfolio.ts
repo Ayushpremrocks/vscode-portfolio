@@ -2,6 +2,7 @@
 // data/portfolio.ts — Single source of truth for all personal content.
 // Edit ONLY this file to replace placeholders with your real information.
 // =============================================================================
+import { SOCIAL_LINKS } from '../config/socialLinks'
 
 export interface Project {
   id: string
@@ -61,9 +62,11 @@ export const portfolio = {
 
   // ── Social Links ──────────────────────────────────────────────────────────────
   social: {
-    github: 'https://github.com/Ayushpremrocks',
-    linkedin: 'https://www.linkedin.com/in/ayushpremrocks/',
-    twitter: 'https://x.com/ayushpremrocks',
+    github: SOCIAL_LINKS.GITHUB,
+    linkedin: SOCIAL_LINKS.LINKEDIN,
+    twitter: SOCIAL_LINKS.TWITTER,
+    leetcode: SOCIAL_LINKS.LEETCODE,
+    codeforces: SOCIAL_LINKS.CODEFORCES,
     website: 'https://www.ayushprem.rocks',
   },
 
