@@ -2,7 +2,15 @@
 // data/hobbies.ts — Centralized hobby data for all hobby panels
 // =============================================================================
 
+import { getHobbyMedia, auditHobbyMedia } from '../utils/hobbyMedia'
+
 // ── Sports Watch ─────────────────────────────────────────────────────────────
+
+export interface HobbyMedia {
+  src: string
+  type: 'gif' | 'video' | 'image'
+  alt?: string
+}
 
 export interface WatchItem {
   id: string
@@ -11,6 +19,7 @@ export interface WatchItem {
   url: string
   imageUrl: string // URL or placeholder flag
   isPlaceholder?: boolean
+  media?: HobbyMedia
 }
 
 export interface WatchGroup {
@@ -19,7 +28,7 @@ export interface WatchGroup {
   teams: WatchItem[]
 }
 
-export const sportsWatch: WatchGroup[] = [
+const rawSportsWatch: WatchGroup[] = [
   {
     sport: 'Football',
     emoji: '⚽',
@@ -82,12 +91,18 @@ export const sportsWatch: WatchGroup[] = [
   },
 ]
 
+export const sportsWatch: WatchGroup[] = rawSportsWatch.map((group) => ({
+  ...group,
+  teams: group.teams.map((t) => ({ ...t, media: t.media ?? getHobbyMedia('sportsWatch', t.name) })),
+}))
+
 // ── Sports Play ───────────────────────────────────────────────────────────────
 
 export interface SportItem {
   id: string
   name: string
   emoji: string
+  media?: HobbyMedia
 }
 
 export interface SportGroup {
@@ -96,7 +111,7 @@ export interface SportGroup {
   sports: SportItem[]
 }
 
-export const sportsPlay: SportGroup[] = [
+const rawSportsPlay: SportGroup[] = [
   {
     group: 'Outdoor',
     emoji: '🌤️',
@@ -117,6 +132,11 @@ export const sportsPlay: SportGroup[] = [
   },
 ]
 
+export const sportsPlay: SportGroup[] = rawSportsPlay.map((group) => ({
+  ...group,
+  sports: group.sports.map((s) => ({ ...s, media: s.media ?? getHobbyMedia('sportsPlay', s.name) })),
+}))
+
 // ── Instruments ───────────────────────────────────────────────────────────────
 
 export interface InstrumentItem {
@@ -124,13 +144,19 @@ export interface InstrumentItem {
   name: string
   emoji: string
   url: string
+  media?: HobbyMedia
 }
 
-export const instruments: InstrumentItem[] = [
+const rawInstruments: InstrumentItem[] = [
   { id: 'guitar',    name: 'Guitar',    emoji: '🎸', url: 'https://en.wikipedia.org/wiki/Guitar' },
   { id: 'piano',     name: 'Piano',     emoji: '🎹', url: 'https://en.wikipedia.org/wiki/Piano' },
   { id: 'harmonium', name: 'Harmonium', emoji: '🪗', url: 'https://en.wikipedia.org/wiki/Harmonium' },
 ]
+
+export const instruments: InstrumentItem[] = rawInstruments.map((item) => ({
+  ...item,
+  media: item.media ?? getHobbyMedia('instruments', item.name),
+}))
 
 // ── Games ─────────────────────────────────────────────────────────────────────
 
@@ -140,6 +166,7 @@ export interface GameItem {
   url: string
   imageUrl: string
   isPlaceholder?: boolean
+  media?: HobbyMedia
 }
 
 export interface GameGroup {
@@ -148,7 +175,7 @@ export interface GameGroup {
   games: GameItem[]
 }
 
-export const games: GameGroup[] = [
+const rawGames: GameGroup[] = [
   {
     platform: 'Mobile',
     emoji: '📱',
@@ -236,6 +263,11 @@ export const games: GameGroup[] = [
   },
 ]
 
+export const games: GameGroup[] = rawGames.map((group) => ({
+  ...group,
+  games: group.games.map((g) => ({ ...g, media: g.media ?? getHobbyMedia('games', g.name) })),
+}))
+
 // ── Movies & TV Shows ─────────────────────────────────────────────────────────
 
 export interface MediaItem {
@@ -246,6 +278,7 @@ export interface MediaItem {
   url: string
   imageUrl: string
   isPlaceholder?: boolean
+  media?: HobbyMedia
 }
 
 export interface MovieGroup {
@@ -253,7 +286,7 @@ export interface MovieGroup {
   items: MediaItem[]
 }
 
-export const moviesTV: MovieGroup[] = [
+const rawMoviesTV: MovieGroup[] = [
   {
     group: 'Hindi Movies',
     items: [
@@ -335,6 +368,11 @@ export const moviesTV: MovieGroup[] = [
   },
 ]
 
+export const moviesTV: MovieGroup[] = rawMoviesTV.map((group) => ({
+  ...group,
+  items: group.items.map((m) => ({ ...m, media: m.media ?? getHobbyMedia('moviesTV', m.name) })),
+}))
+
 // ── Anime ─────────────────────────────────────────────────────────────────────
 
 export interface AnimeItem {
@@ -344,9 +382,10 @@ export interface AnimeItem {
   url: string        // MAL or IMDB
   imageUrl: string
   isPlaceholder?: boolean
+  media?: HobbyMedia
 }
 
-export const anime: AnimeItem[] = [
+const rawAnime: AnimeItem[] = [
   {
     id: 'deathnote',
     name: 'Death Note',
@@ -377,3 +416,19 @@ export const anime: AnimeItem[] = [
     isPlaceholder: true,
   },
 ]
+
+export const anime: AnimeItem[] = rawAnime.map((a) => ({
+  ...a,
+  media: a.media ?? getHobbyMedia('anime', a.name),
+}))
+
+// Audit all cards against discovered media assets in development mode
+auditHobbyMedia([
+  ...sportsWatch.flatMap((g) => g.teams),
+  ...sportsPlay.flatMap((g) => g.sports),
+  ...instruments,
+  ...games.flatMap((g) => g.games),
+  ...moviesTV.flatMap((g) => g.items),
+  ...anime,
+])
+

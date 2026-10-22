@@ -43,8 +43,8 @@ export interface Skill {
 export const portfolio = {
   // ── Personal ─────────────────────────────────────────────────────────────────
   name: 'Ayush Prem',
-  title: 'Software Developer',
-  subtitle: 'Software Developer, Problem Solver, Machine Learning Enthusiast',
+  title: 'Software Engineer',
+  subtitle: 'Final year, Chandigarh University',
   location: 'Chandigarh, IND',
   email: 'ayushpremrocks@gmail.com',
   phone: '[Phone Number]',

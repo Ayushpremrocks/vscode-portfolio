@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { games } from '../../data/hobbies'
+import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
 
 export const GamesPanel: React.FC = () => {
   return (
@@ -55,12 +56,65 @@ export const GamesPanel: React.FC = () => {
   )
 }
 
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
+
 const GameCard: React.FC<{
   game: typeof games[0]['games'][0]
   index: number
 }> = ({ game, index }) => {
   const [hovered, setHovered] = useState(false)
-  const [imgError, setImgError] = useState(false)
+
+  if (game.media) {
+    return (
+      <motion.a
+        href={game.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2, delay: index * 0.04 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '135px',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          border: `1px solid ${hovered ? 'rgba(220,220,170,0.65)' : 'rgba(255,255,255,0.12)'}`,
+          textDecoration: 'none',
+          cursor: 'pointer',
+          transition: 'all 0.18s ease',
+          transform: hovered ? 'translateY(-2px)' : 'none',
+          boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.25)',
+        }}
+      >
+        <HobbyMediaBackground media={game.media} alt={game.name} hovered={hovered} />
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            marginTop: 'auto',
+            padding: '12px 14px',
+            textAlign: 'left',
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              color: '#ffffff',
+              textShadow: '0 1px 5px rgba(0,0,0,0.8)',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {game.name}
+          </div>
+        </div>
+      </motion.a>
+    )
+  }
 
   return (
     <motion.a
@@ -99,16 +153,13 @@ const GameCard: React.FC<{
           flexShrink: 0,
         }}
       >
-        {!imgError && !game.isPlaceholder && game.imageUrl ? (
-          <img
-            src={game.imageUrl}
-            alt={game.name}
-            onError={() => setImgError(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span style={{ fontSize: '40px' }}>🎮</span>
-        )}
+        <HobbyMediaDisplay
+          media={game.media}
+          fallbackImageUrl={!game.isPlaceholder ? game.imageUrl : undefined}
+          fallbackEmoji={<span style={{ fontSize: '40px' }}>🎮</span>}
+          alt={game.name}
+          objectFit="cover"
+        />
       </div>
 
       {/* Name */}

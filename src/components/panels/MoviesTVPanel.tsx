@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { moviesTV } from '../../data/hobbies'
+import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
 
 export const MoviesTVPanel: React.FC = () => {
   return (
@@ -54,12 +55,77 @@ export const MoviesTVPanel: React.FC = () => {
   )
 }
 
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
+
 const MediaCard: React.FC<{
   item: typeof moviesTV[0]['items'][0]
   index: number
 }> = ({ item, index }) => {
   const [hovered, setHovered] = useState(false)
-  const [imgError, setImgError] = useState(false)
+
+  if (item.media) {
+    return (
+      <motion.a
+        href={item.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.2, delay: index * 0.05 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          position: 'relative',
+          display: 'flex',
+          flexDirection: 'column',
+          aspectRatio: '2/3',
+          borderRadius: '10px',
+          overflow: 'hidden',
+          border: `1px solid ${hovered ? 'rgba(206,145,120,0.65)' : 'rgba(255,255,255,0.12)'}`,
+          textDecoration: 'none',
+          cursor: 'pointer',
+          transition: 'all 0.18s ease',
+          transform: hovered ? 'translateY(-2px) scale(1.01)' : 'none',
+          boxShadow: hovered ? '0 8px 24px rgba(0,0,0,0.5)' : '0 2px 8px rgba(0,0,0,0.25)',
+        }}
+      >
+        <HobbyMediaBackground media={item.media} alt={item.name} hovered={hovered} />
+        <div
+          style={{
+            position: 'relative',
+            zIndex: 2,
+            marginTop: 'auto',
+            padding: '12px',
+            textAlign: 'left',
+          }}
+        >
+          <div
+            style={{
+              fontWeight: 600,
+              fontSize: '0.85rem',
+              color: '#ffffff',
+              textShadow: '0 1px 5px rgba(0,0,0,0.8)',
+              marginBottom: '2px',
+              letterSpacing: '-0.01em',
+            }}
+          >
+            {item.name}
+          </div>
+          {item.year && (
+            <div
+              style={{
+                fontSize: '0.7rem',
+                color: 'rgba(210,210,210,0.9)',
+                textShadow: '0 1px 3px rgba(0,0,0,0.65)',
+              }}
+            >
+              {item.year}
+            </div>
+          )}
+        </div>
+      </motion.a>
+    )
+  }
 
   return (
     <motion.a
@@ -98,16 +164,13 @@ const MediaCard: React.FC<{
           flexShrink: 0,
         }}
       >
-        {!imgError && item.imageUrl ? (
-          <img
-            src={item.imageUrl}
-            alt={item.name}
-            onError={() => setImgError(true)}
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-          />
-        ) : (
-          <span style={{ fontSize: '40px' }}>🎬</span>
-        )}
+        <HobbyMediaDisplay
+          media={item.media}
+          fallbackImageUrl={item.imageUrl}
+          fallbackEmoji={<span style={{ fontSize: '40px' }}>🎬</span>}
+          alt={item.name}
+          objectFit="cover"
+        />
       </div>
 
       {/* Title + year */}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { sportsWatch } from '../../data/hobbies'
+import type { WatchItem } from '../../data/hobbies'
 
 export const SportsWatchPanel: React.FC = () => {
   return (
@@ -55,10 +56,91 @@ export const SportsWatchPanel: React.FC = () => {
   )
 }
 
-const TeamCard: React.FC<{
-  team: typeof sportsWatch[0]['teams'][0]
-  index: number
-}> = ({ team, index }) => {
+// ── Dispatcher — branches on whether the item has a `media` field ─────────────
+
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
+
+type CardProps = { team: WatchItem; index: number }
+
+const TeamCard: React.FC<CardProps> = ({ team, index }) =>
+  team.media ? (
+    <MediaTileCard team={team} index={index} />
+  ) : (
+    <ClassicCard team={team} index={index} />
+  )
+
+// ── Full-bleed media tile ─────────────────────────────────────────────────────
+
+const MediaTileCard: React.FC<CardProps> = ({ team, index }) => {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <motion.a
+      href={team.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      initial={{ opacity: 0, scale: 0.97 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.2, delay: index * 0.05 }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        position: 'relative',
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '152px',
+        borderRadius: '10px',
+        overflow: 'hidden',
+        border: `1px solid ${hovered ? 'rgba(0,127,212,0.65)' : 'rgba(255,255,255,0.12)'}`,
+        textDecoration: 'none',
+        cursor: 'pointer',
+        transition: 'border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease',
+        transform: hovered ? 'translateY(-2px)' : 'none',
+        boxShadow: hovered
+          ? '0 8px 28px rgba(0,0,0,0.55)'
+          : '0 2px 8px rgba(0,0,0,0.25)',
+      }}
+    >
+      <HobbyMediaBackground media={team.media} alt={team.name} hovered={hovered} />
+
+      {/* Layer 3 – text, pinned to the bottom */}
+      <div
+        style={{
+          position: 'relative',
+          zIndex: 2,
+          marginTop: 'auto',
+          padding: '12px 14px',
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 600,
+            fontSize: '0.875rem',
+            color: '#ffffff',
+            textShadow: '0 1px 5px rgba(0,0,0,0.8)',
+            marginBottom: '2px',
+            letterSpacing: '-0.01em',
+          }}
+        >
+          {team.name}
+        </div>
+        <div
+          style={{
+            fontSize: '0.7rem',
+            color: 'rgba(210,210,210,0.9)',
+            textShadow: '0 1px 3px rgba(0,0,0,0.65)',
+          }}
+        >
+          {team.description}
+        </div>
+      </div>
+    </motion.a>
+  )
+}
+
+// ── Classic icon + text card (for items without media) ────────────────────────
+
+const ClassicCard: React.FC<CardProps> = ({ team, index }) => {
   const [hovered, setHovered] = useState(false)
   const [imgError, setImgError] = useState(false)
 
@@ -88,7 +170,7 @@ const TeamCard: React.FC<{
         boxShadow: hovered ? '0 6px 20px rgba(0,0,0,0.3)' : 'none',
       }}
     >
-      {/* Team logo / image */}
+      {/* Team logo icon box */}
       <div
         style={{
           width: '72px',
@@ -102,10 +184,11 @@ const TeamCard: React.FC<{
           flexShrink: 0,
         }}
       >
-        {!imgError ? (
+        {!imgError && team.imageUrl ? (
           <img
             src={team.imageUrl}
             alt={team.name}
+            loading="lazy"
             onError={() => setImgError(true)}
             style={{ width: '100%', height: '100%', objectFit: 'contain', padding: '4px' }}
           />
