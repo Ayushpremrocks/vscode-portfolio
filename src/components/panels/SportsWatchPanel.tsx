@@ -19,10 +19,10 @@ export const SportsWatchPanel: React.FC = () => {
           className="text-3xl font-bold mb-2 tracking-tight"
           style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
         >
-          Sports I Follow
+          Sports I am deeply into
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          Teams and athletes I root for.
+          I am a major sports watcher. Nothing teaches resilience, teamwork and never giving up like watching a comeback unfold live.
         </p>
       </motion.div>
 

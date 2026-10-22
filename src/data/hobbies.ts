@@ -36,14 +36,14 @@ const rawSportsWatch: WatchGroup[] = [
       {
         id: 'fcb',
         name: 'FC Barcelona',
-        description: 'Club — La Liga, Spain',
+        description: 'La Liga, Spain',
         url: 'https://www.fcbarcelona.com',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg',
       },
       {
         id: 'arg',
         name: 'Argentina',
-        description: 'National Team — FIFA World Champions',
+        description: 'Argentina Men National Football Team',
         url: 'https://www.afa.com.ar',
         imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/1/1a/24_selecci%C3%B3n_argentina_de_f%C3%BAtbol-association.svg',
       },
@@ -117,17 +117,17 @@ const rawSportsPlay: SportGroup[] = [
     emoji: '🌤️',
     sports: [
       { id: 'football-play', name: 'Football', emoji: '⚽' },
-      { id: 'cricket-play',  name: 'Cricket',  emoji: '🏏' },
-      { id: 'volleyball',    name: 'Volleyball', emoji: '🏐' },
+      { id: 'cricket-play', name: 'Cricket', emoji: '🏏' },
+      { id: 'volleyball', name: 'Volleyball', emoji: '🏐' },
     ],
   },
   {
     group: 'Indoor',
     emoji: '🏠',
     sports: [
-      { id: 'badminton',    name: 'Badminton',     emoji: '🏸' },
-      { id: 'tabletennis', name: 'Table Tennis',  emoji: '🏓' },
-      { id: 'chess-sport', name: 'Chess',         emoji: '♟️' },
+      { id: 'badminton', name: 'Badminton', emoji: '🏸' },
+      { id: 'tabletennis', name: 'Table Tennis', emoji: '🏓' },
+      { id: 'chess-sport', name: 'Chess', emoji: '♟️' },
     ],
   },
 ]
@@ -148,8 +148,8 @@ export interface InstrumentItem {
 }
 
 const rawInstruments: InstrumentItem[] = [
-  { id: 'guitar',    name: 'Guitar',    emoji: '🎸', url: 'https://en.wikipedia.org/wiki/Guitar' },
-  { id: 'piano',     name: 'Piano',     emoji: '🎹', url: 'https://en.wikipedia.org/wiki/Piano' },
+  { id: 'guitar', name: 'Guitar', emoji: '🎸', url: 'https://en.wikipedia.org/wiki/Guitar' },
+  { id: 'piano', name: 'Piano', emoji: '🎹', url: 'https://en.wikipedia.org/wiki/Piano' },
   { id: 'harmonium', name: 'Harmonium', emoji: '🪗', url: 'https://en.wikipedia.org/wiki/Harmonium' },
 ]
 

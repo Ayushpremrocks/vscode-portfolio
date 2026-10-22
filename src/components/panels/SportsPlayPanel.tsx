@@ -19,10 +19,10 @@ export const SportsPlayPanel: React.FC = () => {
           className="text-3xl font-bold mb-2 tracking-tight"
           style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
         >
-          Sports I Play
+          Sports I am playing
         </h1>
         <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-          Staying active — both outdoors and indoors.
+          I enjoy playing indoors and outdoors. It teaches me teamwork, discipline and how to handle both wins and losses.
         </p>
       </motion.div>
 
