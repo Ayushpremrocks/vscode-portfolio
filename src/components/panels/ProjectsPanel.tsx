@@ -11,19 +11,11 @@ const CATEGORY_COLORS: Record<string, { text: string; bg: string; border: string
   'Hardware':           { text: '#ce9178', bg: 'rgba(206,145,120,0.12)', border: 'rgba(206,145,120,0.28)' },
   'Java':               { text: '#e06c75', bg: 'rgba(224,108,117,0.12)', border: 'rgba(224,108,117,0.28)' },
   'Next.js and React':  { text: '#4fc1ff', bg: 'rgba(79,193,255,0.12)',  border: 'rgba(79,193,255,0.28)' },
-  'Data Analytics':     { text: '#dcdcaa', bg: 'rgba(220,220,170,0.12)', border: 'rgba(220,220,170,0.28)' },
+  'Data Analytics':     { text: 'var(--yellow)', bg: 'color-mix(in srgb, var(--yellow) 12%, transparent)', border: 'color-mix(in srgb, var(--yellow) 28%, transparent)' },
 }
 
-const CATEGORIES = [
-  'All',
-  'Spring Boot',
-  'Machine Learning',
-  'Chatbots',
-  'Next.js and React',
-  'Java',
-  'Hardware',
-  'Data Analytics',
-]
+// Filter pills: 'All' followed by each category in the order it first appears in the data
+const CATEGORIES = ['All', ...new Set(portfolio.projects.map(p => p.category))]
 
 export const ProjectsPanel: React.FC = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All')
@@ -63,7 +55,7 @@ export const ProjectsPanel: React.FC = () => {
 
   return (
     <div
-      className="min-h-full px-6 md:px-10 py-10 max-w-6xl mx-auto"
+      className="min-h-full px-1 sm:px-4 lg:px-10 py-6 sm:py-10 max-w-6xl mx-auto"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       {/* Header */}
@@ -77,22 +69,22 @@ export const ProjectsPanel: React.FC = () => {
           <div>
             <h1
               className="text-3xl font-bold tracking-tight flex items-center gap-2.5"
-              style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+              style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
             >
               Projects
               <span
                 className="text-xs px-2.5 py-0.5 rounded-full font-mono font-normal"
                 style={{
-                  background: 'rgba(0,122,204,0.15)',
+                  background: 'color-mix(in srgb, var(--blue) 15%, transparent)',
                   color: 'var(--blue)',
-                  border: '1px solid rgba(0,122,204,0.3)',
+                  border: '1px solid color-mix(in srgb, var(--blue) 30%, transparent)',
                 }}
               >
                 {portfolio.projects.length}
               </span>
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
-              Things I've built — full-stack systems, machine learning models, chatbots, and analytics.
+              Things I've built — full-stack systems, Web3, machine learning models, chatbots, and analytics.
             </p>
           </div>
         </div>
@@ -121,9 +113,9 @@ export const ProjectsPanel: React.FC = () => {
             style={{
               background: 'rgba(255,255,255,0.03)',
               border: '1px solid rgba(255,255,255,0.1)',
-              color: '#e8e8e8',
+              color: 'var(--text-strong)',
             }}
-            onFocus={e => (e.currentTarget.style.borderColor = 'rgba(0,122,204,0.6)')}
+            onFocus={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--blue) 60%, transparent)')}
             onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
           />
           {searchQuery && (
@@ -152,13 +144,13 @@ export const ProjectsPanel: React.FC = () => {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all"
                 style={{
                   background: isSelected
-                    ? 'rgba(0,122,204,0.22)'
+                    ? 'color-mix(in srgb, var(--blue) 22%, transparent)'
                     : 'rgba(255,255,255,0.025)',
                   border: isSelected
-                    ? '1px solid rgba(0,122,204,0.65)'
+                    ? '1px solid color-mix(in srgb, var(--blue) 65%, transparent)'
                     : '1px solid rgba(255,255,255,0.07)',
                   color: isSelected ? '#ffffff' : 'var(--text-muted)',
-                  boxShadow: isSelected ? '0 0 12px rgba(0,122,204,0.2)' : 'none',
+                  boxShadow: isSelected ? '0 0 12px color-mix(in srgb, var(--blue) 20%, transparent)' : 'none',
                 }}
               >
                 {style && (
@@ -187,9 +179,9 @@ export const ProjectsPanel: React.FC = () => {
       {/* Status line */}
       <div className="flex items-center justify-between text-xs mb-5" style={{ color: 'var(--text-muted)' }}>
         <span>
-          Showing <span style={{ color: '#e8e8e8', fontWeight: 600 }}>{filteredProjects.length}</span> {filteredProjects.length === 1 ? 'project' : 'projects'}
+          Showing <span style={{ color: 'var(--text-strong)', fontWeight: 600 }}>{filteredProjects.length}</span> {filteredProjects.length === 1 ? 'project' : 'projects'}
           {selectedCategory !== 'All' && <span> in <span style={{ color: 'var(--blue)' }}>{selectedCategory}</span></span>}
-          {searchQuery && <span> matching "<span style={{ color: '#e8e8e8' }}>{searchQuery}</span>"</span>}
+          {searchQuery && <span> matching "<span style={{ color: 'var(--text-strong)' }}>{searchQuery}</span>"</span>}
         </span>
       </div>
 
@@ -207,7 +199,7 @@ export const ProjectsPanel: React.FC = () => {
               border: '1px dashed rgba(255,255,255,0.1)',
             }}
           >
-            <p className="text-sm mb-2" style={{ color: '#e8e8e8' }}>
+            <p className="text-sm mb-2" style={{ color: 'var(--text-strong)' }}>
               No projects found
             </p>
             <p className="text-xs mb-4" style={{ color: 'var(--text-muted)' }}>
@@ -220,9 +212,9 @@ export const ProjectsPanel: React.FC = () => {
               }}
               className="text-xs px-3 py-1.5 rounded"
               style={{
-                background: 'rgba(0,122,204,0.2)',
+                background: 'color-mix(in srgb, var(--blue) 20%, transparent)',
                 color: 'var(--blue)',
-                border: '1px solid rgba(0,122,204,0.4)',
+                border: '1px solid color-mix(in srgb, var(--blue) 40%, transparent)',
               }}
             >
               Reset Filters
@@ -240,7 +232,7 @@ export const ProjectsPanel: React.FC = () => {
             {featured.length > 0 && (
               <section>
                 <div className="flex items-center gap-2 mb-4">
-                  <Sparkles size={14} style={{ color: '#dcdcaa' }} />
+                  <Sparkles size={14} style={{ color: 'var(--yellow)' }} />
                   <h2
                     className="text-xs font-semibold uppercase tracking-widest"
                     style={{ color: 'var(--text-muted)', letterSpacing: '0.1em' }}
@@ -320,9 +312,9 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, featuredCard 
         borderRadius: '10px',
         border: `1px solid ${
           hovered
-            ? 'rgba(0,127,212,0.5)'
+            ? 'color-mix(in srgb, var(--blue) 50%, transparent)'
             : featuredCard
-            ? 'rgba(220,220,170,0.18)'
+            ? 'color-mix(in srgb, var(--yellow) 18%, transparent)'
             : 'rgba(255,255,255,0.08)'
         }`,
         background: hovered
@@ -355,12 +347,12 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, featuredCard 
               <span
                 className="flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-full font-medium"
                 style={{
-                  color: '#dcdcaa',
-                  background: 'rgba(220,220,170,0.1)',
-                  border: '1px solid rgba(220,220,170,0.25)',
+                  color: 'var(--yellow)',
+                  background: 'color-mix(in srgb, var(--yellow) 10%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--yellow) 25%, transparent)',
                 }}
               >
-                <Star size={10} fill="#dcdcaa" />
+                <Star size={10} fill="var(--yellow)" />
                 Featured
               </span>
             )}
@@ -393,8 +385,8 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, featuredCard 
                 className="flex items-center gap-1 text-[11px] px-2 py-1 rounded transition-all hover:brightness-110 font-medium"
                 style={{
                   color: '#ffffff',
-                  background: 'rgba(0,122,204,0.35)',
-                  border: '1px solid rgba(0,122,204,0.6)',
+                  background: 'color-mix(in srgb, var(--blue) 35%, transparent)',
+                  border: '1px solid color-mix(in srgb, var(--blue) 60%, transparent)',
                 }}
               >
                 <span>Live</span>
@@ -407,7 +399,7 @@ const ProjectCard: React.FC<ProjectCardProps> = ({ project, index, featuredCard 
         {/* Project Title */}
         <h3
           className="font-semibold text-base mb-2 tracking-tight"
-          style={{ color: '#e8e8e8' }}
+          style={{ color: 'var(--text-strong)' }}
         >
           {project.name}
         </h3>

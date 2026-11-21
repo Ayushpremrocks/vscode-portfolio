@@ -1,218 +1,240 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import type { TerminalEntry, PanelName } from '../types'
 import { portfolio } from '../data/portfolio'
-
-const WELCOME: TerminalEntry[] = [
-  {
-    id:      'welcome-0',
-    type:    'info',
-    content: `Welcome to ${portfolio.name}'s Portfolio Terminal`,
-  },
-  {
-    id:      'welcome-1',
-    type:    'info',
-    content: `Type <span style="color:var(--func)">help</span> to see available commands.`,
-  },
-  { id: 'welcome-sep', type: 'info', content: '' },
-]
+import { FILE_META } from './useFileSystem'
+import { loadStats, platformTitle, totalSolved, timeAgo } from '../data/stats'
 
 type OpenFileFn = (panel: PanelName) => void
+type Line = Omit<TerminalEntry, 'id'>
 
-function buildOutput(openFile: OpenFileFn): Record<string, () => TerminalEntry[]> {
-  const id = () => Math.random().toString(36).slice(2, 8)
+let nextId = 0
+const withIds = (lines: Line[]): TerminalEntry[] =>
+  lines.map(l => ({ ...l, id: `t-${nextId++}` }))
 
+/** Escapes text before it is placed into the HTML-rendered terminal output. */
+const esc = (s: string) =>
+  s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+
+const color = (v: string, text: string) => `<span style="color:var(--${v})">${esc(text)}</span>`
+const out = (content: string): Line => ({ type: 'output', content })
+const blank: Line = { type: 'output', content: '' }
+
+const WELCOME: TerminalEntry[] = withIds([
+  { type: 'info', content: `Welcome to ${esc(portfolio.name)}'s Portfolio Terminal` },
+  { type: 'info', content: `Type ${color('func', 'help')} to see available commands.` },
+  { type: 'info', content: '' },
+])
+
+const HELP: [string, string][] = [
+  ['about',      'Learn about me'],
+  ['whoami',     'Who am I?'],
+  ['skills',     'View my skills'],
+  ['stats',      'Awards + live coding stats (LeetCode, CF, CodeChef, GitHub)'],
+  ['projects',   'Browse my projects'],
+  ['experience', 'Work experience'],
+  ['education',  'Education history'],
+  ['contact',    'Get in touch'],
+  ['resume',     'View / download resume'],
+  ['ls',         'List directory contents'],
+  ['open',       'Open a file, e.g. open games.ts'],
+  ['pwd',        'Print working directory'],
+  ['date',       'Print current date/time'],
+  ['clear',      'Clear terminal'],
+]
+
+async function statsCommand(openFile: OpenFileFn): Promise<Line[]> {
+  openFile('achievements')
+  const s = await loadStats()
+  if (!s) return [{ type: 'error', content: 'stats: could not load live stats — try again later' }, blank]
+
+  const row = (label: string, title: string, titleColor: string, rest: string) =>
+    out(`  ${color('keyword', label.padEnd(11))} <span style="color:${titleColor}">${esc(title.padEnd(9))}</span> ${color('text-muted', rest)}`)
+  const lc = platformTitle('leetcode', s)
+  const cf = platformTitle('codeforces', s)
+  const cc = platformTitle('codechef', s)
+
+  return [
+    out(color('func', 'Hackathons & contests')),
+    ...portfolio.achievements.map(a => out(`  ${color('yellow', a.result)} — ${esc(a.event)}, ${color('text-muted', a.organizer)}`)),
+    blank,
+    out(color('func', 'Coding stats') + ' ' + color('comment', `(updated ${timeAgo(s.updatedAt)})`)),
+    row('LeetCode', lc.title, lc.color, `rating ${s.leetcode?.rating ?? '—'} · ${s.leetcode?.solved.total ?? '—'} solved`),
+    row('Codeforces', cf.title, cf.color, `rating ${s.codeforces?.rating ?? '—'} (max ${s.codeforces?.maxRating ?? '—'}) · ${s.codeforces?.solved ?? '—'} solved`),
+    row('CodeChef', cc.title, cc.color, `rating ${s.codechef?.rating ?? '—'} · ${s.codechef?.solved ?? '—'} solved`),
+    out(`  ${color('keyword', 'GitHub'.padEnd(11))} ${color('text-muted', `${s.github?.contributions ?? '—'} contributions · ${s.github?.publicRepos ?? '—'} repos`)}`),
+    out(`  ${color('green', `${totalSolved(s)}+ problems solved in total`)}`),
+    blank,
+  ]
+}
+
+type Handler = (args: string[]) => Line[] | Promise<Line[]>
+
+function buildCommands(openFile: OpenFileFn): Record<string, Handler> {
   return {
     help: () => [
-      { id: id(), type: 'output', content: `<span style="color:var(--func)">Available commands:</span>` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">about</span>      — Learn about me` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">whoami</span>     — Who am I?` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">skills</span>     — View my skills` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">projects</span>   — Browse my projects` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">experience</span> — Work experience` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">education</span>  — Education history` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">contact</span>    — Get in touch` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">resume</span>     — View / download resume` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">ls</span>         — List directory contents` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">pwd</span>        — Print working directory` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">date</span>       — Print current date/time` },
-      { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">clear</span>      — Clear terminal` },
-      { id: id(), type: 'output', content: '' },
+      out(color('func', 'Available commands:')),
+      ...HELP.map(([cmd, desc]) => out(`  ${color('keyword', cmd.padEnd(10))} — ${esc(desc)}`)),
+      blank,
     ],
 
     whoami: () => {
       openFile('about')
       return [
-        { id: id(), type: 'success', content: `<span style="color:var(--type)">${portfolio.name}</span>` },
-        { id: id(), type: 'output', content: `<span style="color:var(--text-muted)">${portfolio.title}</span>` },
-        { id: id(), type: 'output', content: `<span style="color:var(--comment)">📍 ${portfolio.location}</span>` },
-        { id: id(), type: 'output', content: '' },
+        { type: 'success', content: color('type', portfolio.name) },
+        out(color('text-muted', portfolio.title)),
+        out(color('comment', `📍 ${portfolio.location}`)),
+        blank,
       ]
     },
 
     about: () => {
       openFile('about')
-      return portfolio.bio.map(line =>
-        ({ id: id(), type: 'output' as const, content: line || '' })
-      ).concat([{ id: id(), type: 'output', content: '' }])
+      return [...portfolio.bio.map(line => out(esc(line))), blank]
     },
 
     skills: () => {
       openFile('skills')
-      const entries: TerminalEntry[] = [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Skills:</span>` },
+      return [
+        out(color('func', 'Skills:')),
+        ...portfolio.skills.map(cat =>
+          out(`  ${color('keyword', `${cat.label}:`)} ${esc(cat.skills.map(s => s.name).join(', '))}`)
+        ),
+        blank,
       ]
-      const { languages, frameworks, tools, databases } = portfolio.skills
-      const fmt = (label: string, arr: { name: string }[]) => [
-        { id: id(), type: 'output' as const, content: `  <span style="color:var(--keyword)">${label}:</span> ${arr.map(s => s.name).join(', ')}` },
-      ]
-      return entries
-        .concat(fmt('Languages',  languages))
-        .concat(fmt('Frameworks', frameworks))
-        .concat(fmt('Tools',      tools))
-        .concat(fmt('Databases',  databases))
-        .concat([{ id: id(), type: 'output', content: '' }])
     },
+
+    stats: () => statsCommand(openFile),
 
     projects: () => {
       openFile('projects')
-      const entries: TerminalEntry[] = [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Projects (${portfolio.projects.length}):</span>` },
+      return [
+        out(color('func', `Projects (${portfolio.projects.length}):`)),
+        ...portfolio.projects.flatMap((p, i) => [
+          out(`  ${color('type', `${i + 1}. ${p.name}`)} ${color('keyword', `[${p.category}]`)}`),
+          out(`     ${color('text-muted', p.description)}`),
+          out(`     ${color('comment', p.tech.join(' · '))}`),
+        ]),
+        blank,
       ]
-      portfolio.projects.forEach((p, i) => {
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--type)">${i + 1}. ${p.name}</span> <span style="color:var(--keyword)">[${p.category}]</span>` })
-        entries.push({ id: id(), type: 'output', content: `     <span style="color:var(--text-muted)">${p.description}</span>` })
-        entries.push({ id: id(), type: 'output', content: `     <span style="color:var(--comment)">${p.tech.join(' · ')}</span>` })
-      })
-      entries.push({ id: id(), type: 'output', content: '' })
-      return entries
     },
 
     experience: () => {
       openFile('experience')
-      const entries: TerminalEntry[] = [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Work Experience:</span>` },
+      return [
+        out(color('func', 'Work Experience:')),
+        ...portfolio.experience.flatMap(e => [
+          out(`  ${color('type', e.role)} @ ${color('keyword', e.company)}`),
+          out(`  ${color('comment', `${e.period} · ${e.location}`)}`),
+        ]),
+        blank,
       ]
-      portfolio.experience.forEach(e => {
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--type)">${e.role}</span> @ <span style="color:var(--keyword)">${e.company}</span>` })
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--comment)">${e.period} · ${e.location}</span>` })
-      })
-      entries.push({ id: id(), type: 'output', content: '' })
-      return entries
     },
 
     education: () => {
       openFile('education')
-      const entries: TerminalEntry[] = [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Education:</span>` },
+      return [
+        out(color('func', 'Education:')),
+        ...portfolio.education.flatMap(e => [
+          out(`  ${color('type', e.field ? `${e.degree} in ${e.field}` : e.degree)}`),
+          out(`  ${color('keyword', e.school)} · ${color('comment', e.period)}`),
+        ]),
+        blank,
       ]
-      portfolio.education.forEach(e => {
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--type)">${e.degree} in ${e.field}</span>` })
-        entries.push({ id: id(), type: 'output', content: `  <span style="color:var(--keyword)">${e.school}</span> · <span style="color:var(--comment)">${e.period}</span>` })
-      })
-      entries.push({ id: id(), type: 'output', content: '' })
-      return entries
     },
 
     contact: () => {
       openFile('contact')
       return [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Contact Information:</span>` },
-        { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">Email:</span>    <span style="color:var(--string)">${portfolio.email}</span>` },
-        { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">GitHub:</span>   <span style="color:var(--blue)">${portfolio.social.github}</span>` },
-        { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">LinkedIn:</span> <span style="color:var(--blue)">${portfolio.social.linkedin}</span>` },
-        { id: id(), type: 'output', content: `  <span style="color:var(--keyword)">Twitter:</span>  <span style="color:var(--blue)">${portfolio.social.twitter}</span>` },
-        { id: id(), type: 'output', content: '' },
+        out(color('func', 'Contact Information:')),
+        out(`  ${color('keyword', 'Email:   ')} ${color('string', portfolio.email)}`),
+        out(`  ${color('keyword', 'GitHub:  ')} ${color('blue', portfolio.social.github)}`),
+        out(`  ${color('keyword', 'LinkedIn:')} ${color('blue', portfolio.social.linkedin)}`),
+        out(`  ${color('keyword', 'Twitter: ')} ${color('blue', portfolio.social.twitter)}`),
+        blank,
       ]
     },
 
     resume: () => {
       openFile('resume')
       return [
-        { id: id(), type: 'output', content: `<span style="color:var(--func)">Resume:</span>` },
-        { id: id(), type: 'output', content: `  <span style="color:var(--blue)">${portfolio.resumeUrl}</span>` },
-        { id: id(), type: 'output', content: '' },
+        out(color('func', 'Resume:')),
+        out(portfolio.resumeUrl
+          ? `  ${color('blue', portfolio.resumeUrl)}`
+          : `  ${color('text-muted', `Available on request — ${portfolio.email}`)}`),
+        blank,
       ]
     },
 
-    ls: () => [
-      { id: id(), type: 'output', content: `<span style="color:var(--type)">about.ts</span>      <span style="color:var(--type)">projects.ts</span>   <span style="color:var(--type)">skills.ts</span>` },
-      { id: id(), type: 'output', content: `<span style="color:var(--type)">experience.ts</span> <span style="color:var(--type)">education.ts</span>  <span style="color:var(--type)">contact.ts</span>    <span style="color:var(--type)">resume.ts</span>` },
-      { id: id(), type: 'output', content: '' },
-    ],
+    ls: () => {
+      const files = (Object.keys(FILE_META) as PanelName[])
+        .filter(p => p !== 'welcome')
+        .map(p => color('type', FILE_META[p].name))
+      return [out(files.join('  ')), blank]
+    },
 
-    pwd: () => [
-      { id: id(), type: 'output', content: `/home/visitor/portfolio` },
-      { id: id(), type: 'output', content: '' },
-    ],
+    open: ([file]) => {
+      const panel = (Object.keys(FILE_META) as PanelName[]).find(
+        p => FILE_META[p].name === file || p === file
+      )
+      if (!file) return [{ type: 'error', content: `Usage: open ${color('type', '<file>')}` }, blank]
+      if (!panel) return [{ type: 'error', content: `open: ${esc(file)}: No such file` }, blank]
+      openFile(panel)
+      return []
+    },
 
-    date: () => [
-      { id: id(), type: 'output', content: new Date().toString() },
-      { id: id(), type: 'output', content: '' },
-    ],
+    pwd: () => [out('/home/visitor/portfolio'), blank],
 
-    sudo: () => [
-      { id: id(), type: 'error', content: `Permission denied 😄` },
-      { id: id(), type: 'output', content: '' },
-    ],
+    date: () => [out(esc(new Date().toString())), blank],
 
-    clear: () => [],
+    sudo: () => [{ type: 'error', content: 'Permission denied 😄' }, blank],
   }
 }
 
+/** Command names offered by Tab-completion (includes hidden easter eggs). */
+export const COMMAND_NAMES = [...HELP.map(([cmd]) => cmd), 'sudo']
+
 export function useTerminal(openFile: OpenFileFn) {
-  const [entries, setEntries]   = useState<TerminalEntry[]>(WELCOME)
-  const [history, setHistory]   = useState<string[]>([])
-  const [historyIdx, setHistoryIdx] = useState(-1)
-  const [commands] = useState(() => buildOutput(openFile))
+  const [entries, setEntries] = useState<TerminalEntry[]>(WELCOME)
+  const [history, setHistory] = useState<string[]>([])
+  const commands = useMemo(() => buildCommands(openFile), [openFile])
 
   const runCommand = useCallback((raw: string) => {
     const input = raw.trim()
     if (!input) return
 
-    const id = Math.random().toString(36).slice(2, 8)
-    const inputEntry: TerminalEntry = {
-      id:      `cmd-${id}`,
-      type:    'input',
-      content: input,
-    }
-
     setHistory(prev => [input, ...prev].slice(0, 100))
-    setHistoryIdx(-1)
 
-    const cmd = input.toLowerCase().split(' ')[0]
+    const [cmd, ...args] = input.split(/\s+/)
+    const name = cmd.toLowerCase()
 
-    if (cmd === 'clear') {
-      setEntries([inputEntry, { id: `clear-${id}`, type: 'info', content: '' }])
+    if (name === 'clear') {
+      setEntries([])
       return
     }
 
-    const handler = commands[cmd]
-    if (handler) {
-      setEntries(prev => [...prev, inputEntry, ...handler()])
+    const inputEntry: Line = { type: 'input', content: input }
+    const handler = commands[name]
+    // Run the handler outside the state updater so side effects (opening files) happen once.
+    const output = handler
+      ? handler(args)
+      : [
+          {
+            type: 'error',
+            content: `Command not found: ${color('red', input)}. Type ${color('func', 'help')} for available commands.`,
+          } as Line,
+          { type: 'info', content: '' } as Line,
+        ]
+
+    if (output instanceof Promise) {
+      // Async commands (e.g. `stats`): echo the input now, append the output when ready
+      setEntries(prev => [...prev, ...withIds([inputEntry])])
+      output.then(lines => setEntries(prev => [...prev, ...withIds(lines)]))
     } else {
-      setEntries(prev => [
-        ...prev,
-        inputEntry,
-        {
-          id:      `err-${id}`,
-          type:    'error',
-          content: `Command not found: <span style="color:var(--red)">${input}</span>. Type <span style="color:var(--func)">help</span> for available commands.`,
-        },
-        { id: `sep-${id}`, type: 'info', content: '' },
-      ])
+      setEntries(prev => [...prev, ...withIds([inputEntry, ...output])])
     }
   }, [commands])
 
-  const navigateHistory = useCallback((dir: 'up' | 'down') => {
-    setHistoryIdx(prev => {
-      if (dir === 'up')   return Math.min(prev + 1, history.length - 1)
-      if (dir === 'down') return Math.max(prev - 1, -1)
-      return prev
-    })
-    return dir === 'up'
-      ? history[Math.min(historyIdx + 1, history.length - 1)] ?? ''
-      : history[Math.max(historyIdx - 1, -1)] ?? ''
-  }, [history, historyIdx])
+  const clear = useCallback(() => setEntries([]), [])
 
-  return { entries, runCommand, history, historyIdx, navigateHistory }
+  return { entries, runCommand, history, clear }
 }

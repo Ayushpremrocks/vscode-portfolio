@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { moviesTV } from '../../data/hobbies'
 import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 export const MoviesTVPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       <motion.div
@@ -17,7 +18,7 @@ export const MoviesTVPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Movies & TV Shows
         </h1>
@@ -42,7 +43,7 @@ export const MoviesTVPanel: React.FC = () => {
             </h2>
             <div
               className="grid gap-4"
-              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(130px, 1fr))' }}
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(130px, calc(50% - 8px)), 1fr))' }}
             >
               {group.items.map((item, ii) => (
                 <MediaCard key={item.id} item={item} index={ii} />
@@ -54,8 +55,6 @@ export const MoviesTVPanel: React.FC = () => {
     </div>
   )
 }
-
-import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 const MediaCard: React.FC<{
   item: typeof moviesTV[0]['items'][0]
@@ -177,7 +176,7 @@ const MediaCard: React.FC<{
       <div className="px-2 py-2.5">
         <div
           className="text-xs font-medium leading-tight mb-0.5"
-          style={{ color: hovered ? '#e8e8e8' : 'var(--text)' }}
+          style={{ color: hovered ? 'var(--text-strong)' : 'var(--text)' }}
         >
           {item.name}
         </div>

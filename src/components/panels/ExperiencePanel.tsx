@@ -1,12 +1,12 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { Briefcase, MapPin, Calendar } from 'lucide-react'
-import { portfolio } from '../../data/portfolio'
+import { portfolio, type Experience } from '../../data/portfolio'
 
 export const ExperiencePanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       {/* Header */}
@@ -18,7 +18,7 @@ export const ExperiencePanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Experience
         </h1>
@@ -54,7 +54,7 @@ export const ExperiencePanel: React.FC = () => {
                 }}
               />
 
-              <ExperienceCard experience={exp} isFirst={i === 0} />
+              <ExperienceCard experience={exp} />
             </motion.div>
           ))}
         </div>
@@ -65,10 +65,7 @@ export const ExperiencePanel: React.FC = () => {
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-const ExperienceCard: React.FC<{
-  experience: typeof portfolio.experience[0]
-  isFirst: boolean
-}> = ({ experience }) => {
+const ExperienceCard: React.FC<{ experience: Experience }> = ({ experience }) => {
   const [hovered, setHovered] = React.useState(false)
 
   return (
@@ -77,7 +74,7 @@ const ExperienceCard: React.FC<{
       onMouseLeave={() => setHovered(false)}
       style={{
         borderRadius: '10px',
-        border: `1px solid ${hovered ? 'rgba(0,127,212,0.5)' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hovered ? 'color-mix(in srgb, var(--blue) 50%, transparent)' : 'rgba(255,255,255,0.08)'}`,
         background: hovered ? 'rgba(255,255,255,0.03)' : 'rgba(255,255,255,0.015)',
         padding: '18px 20px',
         transition: 'all 0.18s ease',
@@ -89,7 +86,7 @@ const ExperienceCard: React.FC<{
         <div>
           <h3
             className="font-semibold text-sm mb-1"
-            style={{ color: '#e8e8e8' }}
+            style={{ color: 'var(--text-strong)' }}
           >
             {experience.role}
           </h3>

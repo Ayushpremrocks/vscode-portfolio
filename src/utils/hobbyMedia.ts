@@ -1,4 +1,4 @@
-import type { HobbyMedia } from '../data/hobbies'
+import type { HobbyMedia } from '../types'
 import { HOBBY_MEDIA_MAP, type PanelKey } from '../data/hobbyMediaMap'
 
 // ── Asset bundle ─────────────────────────────────────────────────────────────
@@ -59,7 +59,7 @@ export function getHobbyMedia(
 //   2. Files in src/assets/hobbies that are not referenced by any map entry
 
 let auditDone = false
-export function auditHobbyMedia(_cards: { name: string }[]): void {
+export function auditHobbyMedia(): void {
   if (!import.meta.env.DEV || auditDone) return
   auditDone = true
 

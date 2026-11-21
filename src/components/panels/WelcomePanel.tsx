@@ -10,8 +10,8 @@ interface WelcomePanelProps {
 
 export const WelcomePanel: React.FC<WelcomePanelProps> = ({ onOpenFile }) => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80%] pt-16 pb-8 font-sans" style={{ color: 'var(--text)' }}>
-      <div className="w-full max-w-3xl px-8">
+    <div className="flex flex-col items-center justify-center min-h-[80%] pt-8 sm:pt-16 pb-8 font-sans" style={{ color: 'var(--text)' }}>
+      <div className="w-full max-w-3xl px-2 sm:px-8">
         <h1 className="text-4xl font-light mb-2">{portfolio.name}</h1>
         <h2 className="text-xl mb-12" style={{ color: 'var(--text-muted)' }}>{portfolio.title}</h2>
 
@@ -23,6 +23,7 @@ export const WelcomePanel: React.FC<WelcomePanelProps> = ({ onOpenFile }) => {
               <WelcomeLink onClick={() => onOpenFile('experience')} icon={<FileCode2 size={16} />} text="Experience..." />
               <WelcomeLink onClick={() => onOpenFile('projects')} icon={<FileCode2 size={16} />} text="Open Projects..." />
               <WelcomeLink onClick={() => onOpenFile('skills')} icon={<FileCode2 size={16} />} text="View Skills..." />
+              <WelcomeLink onClick={() => onOpenFile('achievements')} icon={<FileCode2 size={16} />} text="Coding Achievements..." />
               <WelcomeLink onClick={() => onOpenFile('resume')} icon={<FileCode2 size={16} />} text="Resume..." />
             </ul>
           </div>

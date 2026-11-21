@@ -8,15 +8,23 @@ export const ContactPanel: React.FC = () => {
   const [sent, setSent] = useState(false)
   const [form, setForm] = useState({ name: '', email: '', message: '' })
 
+  // There is no backend, so hand the message to the visitor's email client.
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
+    const subject = `Portfolio contact from ${form.name}`
+    const body = `${form.message}\n\n— ${form.name} (${form.email})`
+    window.location.href =
+      `mailto:${portfolio.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
     setSent(true)
-    setTimeout(() => setSent(false), 4000)
+  }
+
+  const resetForm = () => {
     setForm({ name: '', email: '', message: '' })
+    setSent(false)
   }
 
   const socials = [
-    { icon: <FaGithub size={16} />, label: 'GitHub', href: portfolio.social.github, color: '#e8e8e8' },
+    { icon: <FaGithub size={16} />, label: 'GitHub', href: portfolio.social.github, color: 'var(--text-strong)' },
     { icon: <FaLinkedin size={16} />, label: 'LinkedIn', href: portfolio.social.linkedin, color: '#0a66c2' },
     { icon: <FaTwitter size={16} />, label: 'Twitter', href: portfolio.social.twitter, color: '#1d9bf0' },
     ...(portfolio.social.website ? [{ icon: <Globe size={16} />, label: 'Website', href: portfolio.social.website, color: 'var(--blue)' }] : []),
@@ -29,7 +37,7 @@ export const ContactPanel: React.FC = () => {
 
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)', maxWidth: '700px' }}
     >
       {/* Header */}
@@ -41,7 +49,7 @@ export const ContactPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Contact
         </h1>
@@ -120,7 +128,7 @@ export const ContactPanel: React.FC = () => {
           Send a Message
         </h2>
         <div
-          className="rounded-xl p-6"
+          className="rounded-xl p-4 sm:p-6"
           style={{
             border: '1px solid rgba(255,255,255,0.08)',
             background: 'rgba(255,255,255,0.02)',
@@ -129,9 +137,21 @@ export const ContactPanel: React.FC = () => {
           {sent ? (
             <div className="flex flex-col items-center justify-center py-8 gap-3">
               <CheckCircle size={32} style={{ color: 'var(--green)' }} />
-              <p className="text-sm" style={{ color: 'var(--green)' }}>
-                Message sent! I'll get back to you soon.
+              <p className="text-sm text-center" style={{ color: 'var(--green)' }}>
+                Your email app should now be open with the message ready — just hit send.
               </p>
+              <p className="text-xs text-center" style={{ color: 'var(--text-muted)' }}>
+                Nothing opened? Email me directly at{' '}
+                <a href={`mailto:${portfolio.email}`} style={{ color: 'var(--blue)' }}>{portfolio.email}</a>.
+              </p>
+              <button
+                type="button"
+                onClick={resetForm}
+                className="text-xs underline mt-1"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                Write another message
+              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -175,7 +195,7 @@ export const ContactPanel: React.FC = () => {
                     caretColor: 'var(--blue)',
                     fontFamily: 'inherit',
                   }}
-                  onFocus={e => (e.currentTarget.style.borderColor = 'rgba(0,127,212,0.6)')}
+                  onFocus={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--blue) 60%, transparent)')}
                   onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
                   required
                 />
@@ -192,7 +212,7 @@ export const ContactPanel: React.FC = () => {
                 }}
               >
                 <Send size={12} />
-                Send Message
+                Send via Email
               </button>
             </form>
           )}
@@ -219,7 +239,7 @@ const SocialCard: React.FC<{ icon: React.ReactNode; label: string; href: string;
         gap: '8px',
         padding: '9px 16px',
         borderRadius: '8px',
-        border: `1px solid ${hovered ? color + '55' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hovered ? `color-mix(in srgb, ${color} 35%, transparent)` : 'rgba(255,255,255,0.08)'}`,
         background: hovered ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
         color: hovered ? color : 'var(--text-muted)',
         textDecoration: 'none',
@@ -267,7 +287,7 @@ const FormField: React.FC<{
         caretColor: 'var(--blue)',
         fontFamily: 'inherit',
       }}
-      onFocus={e => (e.currentTarget.style.borderColor = 'rgba(0,127,212,0.6)')}
+      onFocus={e => (e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--blue) 60%, transparent)')}
       onBlur={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
       required
     />

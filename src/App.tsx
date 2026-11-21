@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { TitleBar } from './components/layout/TitleBar'
-import { MenuBar } from './components/layout/MenuBar'
+import { MenuBar, type MenuAction } from './components/layout/MenuBar'
 import { ActivityBar } from './components/layout/ActivityBar'
 import { Sidebar } from './components/layout/Sidebar'
 import { TabBar } from './components/layout/TabBar'
@@ -12,199 +12,212 @@ import { ThemeSwitcher } from './components/ui/ThemeSwitcher'
 import { useFileSystem } from './hooks/useFileSystem'
 import { useTerminal } from './hooks/useTerminal'
 import { useTheme } from './hooks/useTheme'
+import { useMediaQuery } from './hooks/useMediaQuery'
+import { useUrlSync, panelFromPath } from './hooks/useUrlSync'
 import type { PanelName } from './types'
+import {
+  MIN_SIDEBAR_WIDTH, DEFAULT_SIDEBAR_WIDTH, maxSidebarWidth,
+  MIN_TERMINAL_HEIGHT, DEFAULT_TERMINAL_HEIGHT, maxTerminalHeight,
+} from './config/layout'
+
+const SIDEBAR_WIDTH_KEY = 'vscode-portfolio-sidebar-width'
+const TERMINAL_HEIGHT_KEY = 'vscode-portfolio-terminal-height'
+
+const clamp = (v: number, min: number, max: number) => Math.min(Math.max(v, min), max)
+
+const PHONE_QUERY = '(max-width: 767px)'
+const isPhone = () => window.matchMedia(PHONE_QUERY).matches
+// Explorer starts open on laptops/desktops; on tablets and phones it would crowd the editor
+const sidebarOpenByDefault = () => window.innerWidth >= 1024
+// Terminal starts open only when there's room for it (not on phones or short landscape screens)
+const terminalOpenByDefault = () => window.innerWidth >= 768 && window.innerHeight >= 700
+
+/** Reads a saved pixel size from localStorage, clamped to [min, max]. */
+function loadSize(key: string, fallback: number, min: number, max: number): number {
+  try {
+    const saved = parseInt(localStorage.getItem(key) ?? '', 10)
+    if (!isNaN(saved)) return clamp(saved, min, max)
+  } catch { /* storage unavailable */ }
+  return clamp(fallback, min, max)
+}
+
+function saveSize(key: string, value: number) {
+  try {
+    localStorage.setItem(key, String(value))
+  } catch { /* storage unavailable */ }
+}
 
 export default function App() {
-  const { tabs, activePanel, openFile, closeTab, switchTab } = useFileSystem()
+  const { tabs, activePanel, openFile, closeTab, closeActiveTab, switchTab } = useFileSystem(panelFromPath())
+  useUrlSync(activePanel, openFile)
   const { theme, setTheme } = useTheme()
-  const { entries, runCommand, history } = useTerminal(openFile)
+  const { entries, runCommand, history, clear: clearTerminal } = useTerminal(openFile)
 
-  const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [terminalOpen, setTerminalOpen] = useState(true)
+  const phone = useMediaQuery(PHONE_QUERY)
+  const [sidebarOpen, setSidebarOpen] = useState(sidebarOpenByDefault)
+  const [terminalOpen, setTerminalOpen] = useState(terminalOpenByDefault)
   const [cmdPaletteOpen, setCmdPaletteOpen] = useState(false)
-  const [themeSwitcherOpen, setThemeSwitcher] = useState(false)
+  const [themeSwitcherOpen, setThemeSwitcherOpen] = useState(false)
   const [lineCount, setLineCount] = useState(40)
 
-  // Resizable sidebar width with localStorage persistence
-  const [sidebarWidth, setSidebarWidth] = useState(() => {
-    try {
-      const saved = localStorage.getItem('vscode-portfolio-sidebar-width')
-      if (saved) {
-        const val = parseInt(saved, 10)
-        if (!isNaN(val)) {
-          const maxWidth = typeof window !== 'undefined' ? Math.floor(window.innerWidth * 0.5) : 600
-          return Math.min(Math.max(val, 170), maxWidth)
-        }
-      }
-    } catch {}
-    return 240
-  })
+  const [sidebarWidth, setSidebarWidth] = useState(() =>
+    loadSize(SIDEBAR_WIDTH_KEY, DEFAULT_SIDEBAR_WIDTH, MIN_SIDEBAR_WIDTH, maxSidebarWidth())
+  )
+  const [terminalHeight, setTerminalHeight] = useState(() =>
+    loadSize(TERMINAL_HEIGHT_KEY, DEFAULT_TERMINAL_HEIGHT, MIN_TERMINAL_HEIGHT, maxTerminalHeight())
+  )
 
-  // Resizable terminal height with localStorage persistence
-  const [terminalHeight, setTerminalHeight] = useState(() => {
-    try {
-      const saved = localStorage.getItem('vscode-portfolio-terminal-height')
-      if (saved) {
-        const val = parseInt(saved, 10)
-        if (!isNaN(val)) {
-          const maxHeight = typeof window !== 'undefined' ? Math.floor(window.innerHeight * 0.7) : 500
-          return Math.min(Math.max(val, 100), maxHeight)
-        }
-      }
-    } catch {}
-    return 220
-  })
+  useEffect(() => saveSize(SIDEBAR_WIDTH_KEY, sidebarWidth), [sidebarWidth])
+  useEffect(() => saveSize(TERMINAL_HEIGHT_KEY, terminalHeight), [terminalHeight])
 
-  // Persist sidebar width
-  useEffect(() => {
-    try {
-      localStorage.setItem('vscode-portfolio-sidebar-width', sidebarWidth.toString())
-    } catch {}
-  }, [sidebarWidth])
-
-  // Persist terminal height
-  useEffect(() => {
-    try {
-      localStorage.setItem('vscode-portfolio-terminal-height', terminalHeight.toString())
-    } catch {}
-  }, [terminalHeight])
-
-  // Window resize handler to clamp dimensions
+  // Keep panel sizes within bounds when the window is resized
   useEffect(() => {
     const handleResize = () => {
-      const maxWidth = Math.floor(window.innerWidth * 0.5)
-      setSidebarWidth(prev => Math.min(Math.max(prev, 170), maxWidth))
-
-      const maxHeight = Math.floor(window.innerHeight * 0.7)
-      setTerminalHeight(prev => Math.min(Math.max(prev, 100), maxHeight))
+      setSidebarWidth(w => clamp(w, MIN_SIDEBAR_WIDTH, maxSidebarWidth()))
+      setTerminalHeight(h => clamp(h, MIN_TERMINAL_HEIGHT, maxTerminalHeight()))
     }
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Active tab name for title bar
-  const activeTab = tabs.find(t => t.isActive)
+  const toggleSidebar = useCallback(() => setSidebarOpen(v => !v), [])
+  const toggleTerminal = useCallback(() => setTerminalOpen(v => !v), [])
+  const closeCmdPalette = useCallback(() => setCmdPaletteOpen(false), [])
+  const closeThemeSwitcher = useCallback(() => setThemeSwitcherOpen(false), [])
 
-  // Keyboard shortcut: Ctrl+Shift+P → command palette
+  // Global keyboard shortcuts (matched case-insensitively so Caps Lock doesn't break them)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'P') {
+      const mod = e.ctrlKey || e.metaKey
+      if (!mod) return
+      const key = e.key.toLowerCase()
+      if (e.shiftKey && key === 'p') {
         e.preventDefault()
         setCmdPaletteOpen(v => !v)
-      }
-      // Ctrl+B → toggle sidebar
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key === 'b') {
+      } else if (!e.shiftKey && key === 'b') {
         e.preventDefault()
-        setSidebarOpen(v => !v)
-      }
-      // Ctrl+` → toggle terminal
-      if ((e.ctrlKey || e.metaKey) && e.key === '`') {
+        toggleSidebar()
+      } else if (e.code === 'Backquote') {
         e.preventDefault()
-        setTerminalOpen(v => !v)
+        toggleTerminal()
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [])
+  }, [toggleSidebar, toggleTerminal])
 
-  const handleActivitySelect = (id: string) => {
-    if (id === 'explorer') {
-      setSidebarOpen(v => !v)
+  const handleMenuAction = (action: MenuAction) => {
+    switch (action) {
+      case 'closeEditor':    closeActiveTab(); break
+      case 'toggleExplorer': toggleSidebar(); break
+      case 'toggleTerminal': toggleTerminal(); break
+      case 'newTerminal':    clearTerminal(); setTerminalOpen(true); break
+      case 'commandPalette': setCmdPaletteOpen(true); break
+      case 'colorTheme':     setThemeSwitcherOpen(true); break
+      case 'openWelcome':    openFile('welcome'); break
+      case 'openAbout':      openFile('about'); break
     }
   }
 
-  const handleOpenFromPalette = (panel: PanelName) => {
+  // On phones the sidebar is a drawer over the editor, so close it after picking a file
+  const handleSidebarFileClick = (panel: PanelName) => {
     openFile(panel)
-    setCmdPaletteOpen(false)
+    if (isPhone()) setSidebarOpen(false)
   }
+
+  const activeTab = tabs.find(t => t.isActive)
 
   return (
     <div
       id="vscode-portfolio"
-      className="flex flex-col h-screen w-screen overflow-hidden font-mono text-xs"
+      className="flex flex-col h-screen h-[100dvh] w-screen overflow-hidden font-mono text-xs"
       style={{ background: 'var(--bg)', color: 'var(--text)' }}
     >
-      {/* ── Title Bar ───────────────────────────────────────────────────── */}
       <TitleBar
-        activeFileName={activeTab?.name ?? 'welcome.ts'}
+        activeFileName={activeTab?.name ?? 'Welcome'}
         onCommandPalette={() => setCmdPaletteOpen(true)}
       />
 
-      {/* ── Menu Bar ────────────────────────────────────────────────────── */}
-      <MenuBar />
+      <MenuBar onAction={handleMenuAction} />
 
-      {/* ── Main body: Activity + Sidebar + Editor ──────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
-
-        {/* Activity Bar */}
+      {/* Main body: Activity Bar + Sidebar + Editor column */}
+      <div className="relative flex flex-1 min-h-0 overflow-hidden">
         <ActivityBar
-          active={sidebarOpen ? 'explorer' : ''}
-          onSelect={handleActivitySelect}
+          explorerOpen={sidebarOpen}
+          onToggleExplorer={toggleSidebar}
+          onAccount={() => openFile('about')}
+          onSettings={() => setThemeSwitcherOpen(v => !v)}
         />
 
-        {/* Sidebar (Explorer) — collapsible & resizable */}
-        {sidebarOpen && (
+        {sidebarOpen && phone && (
+          // Phones: the Explorer slides over the editor; tap outside to close
+          <>
+            <div
+              className="absolute inset-0 z-30"
+              style={{ background: 'rgba(0, 0, 0, 0.45)' }}
+              onClick={() => setSidebarOpen(false)}
+              aria-hidden="true"
+            />
+            <div className="absolute top-0 bottom-0 left-10 z-40 shadow-2xl">
+              <Sidebar
+                activePanel={activePanel}
+                onFileClick={handleSidebarFileClick}
+                width={Math.min(260, Math.floor(window.innerWidth * 0.8))}
+                resizable={false}
+              />
+            </div>
+          </>
+        )}
+
+        {sidebarOpen && !phone && (
           <Sidebar
             activePanel={activePanel}
-            tabs={tabs}
-            onFileClick={openFile}
+            onFileClick={handleSidebarFileClick}
             width={sidebarWidth}
             onWidthChange={setSidebarWidth}
           />
         )}
 
         {/* Right column: tabs + editor + terminal */}
-        <div className="flex flex-col flex-1 overflow-hidden">
+        <div className="flex flex-col flex-1 min-w-0 overflow-hidden">
+          <TabBar tabs={tabs} onSwitch={switchTab} onClose={closeTab} />
 
-          {/* Tab Bar */}
-          <TabBar
-            tabs={tabs}
-            onSwitch={switchTab}
-            onClose={closeTab}
+          <EditorArea panel={activePanel} onLineCount={setLineCount} onOpenFile={openFile} />
+
+          <Terminal
+            entries={entries}
+            onCommand={runCommand}
+            onClear={clearTerminal}
+            history={history}
+            isOpen={terminalOpen}
+            onToggle={toggleTerminal}
+            height={terminalHeight}
+            onHeightChange={setTerminalHeight}
           />
-
-          {/* Editor + Terminal */}
-          <div className="flex flex-col flex-1 overflow-hidden">
-            <EditorArea
-              panel={activePanel}
-              onLineCount={setLineCount}
-              onOpenFile={openFile}
-            />
-
-            {/* Terminal */}
-            <Terminal
-              entries={entries}
-              onCommand={runCommand}
-              history={history}
-              isOpen={terminalOpen}
-              onToggle={() => setTerminalOpen(v => !v)}
-              height={terminalHeight}
-              onHeightChange={setTerminalHeight}
-            />
-          </div>
         </div>
       </div>
 
-      {/* ── Status Bar ──────────────────────────────────────────────────── */}
       <StatusBar
-        language={activeTab?.language ?? 'TypeScript'}
+        language={activeTab?.language ?? ''}
         lineCount={lineCount}
         theme={theme}
-        onThemeClick={() => setThemeSwitcher(v => !v)}
+        onThemeClick={() => setThemeSwitcherOpen(v => !v)}
+        onStatsClick={() => openFile('achievements')}
       />
 
-      {/* ── Overlays ────────────────────────────────────────────────────── */}
+      {/* Overlays */}
       <CommandPalette
         isOpen={cmdPaletteOpen}
-        onClose={() => setCmdPaletteOpen(false)}
-        onOpen={handleOpenFromPalette}
+        onClose={closeCmdPalette}
+        onOpen={openFile}
+        onColorTheme={() => setThemeSwitcherOpen(true)}
       />
 
       <ThemeSwitcher
         current={theme}
         isOpen={themeSwitcherOpen}
         onSelect={setTheme}
-        onClose={() => setThemeSwitcher(false)}
+        onClose={closeThemeSwitcher}
       />
     </div>
   )

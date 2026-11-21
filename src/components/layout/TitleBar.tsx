@@ -1,5 +1,5 @@
 import React from 'react'
-import { Minus, Square, X } from 'lucide-react'
+import { Minus, Square, X, Search } from 'lucide-react'
 import { portfolio } from '../../data/portfolio'
 
 interface TitleBarProps {
@@ -7,81 +7,38 @@ interface TitleBarProps {
   onCommandPalette: () => void
 }
 
-export const TitleBar: React.FC<TitleBarProps> = ({ activeFileName, onCommandPalette }) => {
-  return (
-    <div
-      className="flex items-center justify-between h-8 px-3 select-none shrink-0"
-      style={{ background: 'var(--bg-titlebar)', borderBottom: '1px solid var(--border)' }}
-    >
-      {/* Traffic lights */}
-      <div className="flex items-center gap-2">
-        <button
-          className="w-3 h-3 rounded-full bg-[#ff5f57] hover:brightness-90 transition-all flex items-center justify-center group"
-          title="Close"
-          aria-label="Close"
-        >
-          <X size={7} className="opacity-0 group-hover:opacity-100 text-[#820005]" />
-        </button>
-        <button
-          className="w-3 h-3 rounded-full bg-[#ffbd2e] hover:brightness-90 transition-all flex items-center justify-center group"
-          title="Minimize"
-          aria-label="Minimize"
-        >
-          <Minus size={7} className="opacity-0 group-hover:opacity-100 text-[#7d4a00]" />
-        </button>
-        <button
-          className="w-3 h-3 rounded-full bg-[#28c840] hover:brightness-90 transition-all flex items-center justify-center group"
-          title="Maximize"
-          aria-label="Maximize"
-        >
-          <Square size={6} className="opacity-0 group-hover:opacity-100 text-[#0a5f18]" />
-        </button>
-      </div>
-
-      {/* Center: command-palette-style clickable title */}
-      <button
-        onClick={onCommandPalette}
-        className="flex items-center gap-2 px-3 py-0.5 rounded text-xs transition-all hover:opacity-80"
-        style={{
-          background: 'var(--bg-input)',
-          color: 'var(--text-muted)',
-          minWidth: '220px',
-        }}
-        title="Open Command Palette (Ctrl+Shift+P)"
-      >
-        <span style={{ color: 'var(--text-dim)' }}>{'>'}</span>
-        <span className="truncate" style={{ color: 'var(--text-muted)' }}>
-          {activeFileName} — {portfolio.name}
-        </span>
-      </button>
-
-      {/* Window controls (Windows style) */}
-      <div className="flex items-center gap-1">
-        <button
-          className="px-3 py-1 text-xs hover:opacity-70 transition-opacity"
-          style={{ color: 'var(--text-muted)' }}
-          title="Minimize window"
-          aria-label="Minimize"
-        >
-          <Minus size={12} />
-        </button>
-        <button
-          className="px-3 py-1 text-xs hover:opacity-70 transition-opacity"
-          style={{ color: 'var(--text-muted)' }}
-          title="Maximize window"
-          aria-label="Maximize"
-        >
-          <Square size={11} />
-        </button>
-        <button
-          className="px-3 py-1 text-xs hover:bg-[#e81123] hover:text-white transition-colors rounded-sm"
-          style={{ color: 'var(--text-muted)' }}
-          title="Close window"
-          aria-label="Close"
-        >
-          <X size={12} />
-        </button>
-      </div>
+// Window controls are purely decorative — this is a web page, not a real window.
+export const TitleBar: React.FC<TitleBarProps> = ({ activeFileName, onCommandPalette }) => (
+  <header
+    className="flex items-center justify-between gap-3 h-8 px-3 select-none shrink-0"
+    style={{ background: 'var(--bg-titlebar)', borderBottom: '1px solid var(--border)' }}
+  >
+    {/* Traffic lights (decorative) */}
+    <div className="hidden sm:flex items-center gap-2" aria-hidden="true">
+      <span className="w-3 h-3 rounded-full bg-[#ff5f57]" />
+      <span className="w-3 h-3 rounded-full bg-[#ffbd2e]" />
+      <span className="w-3 h-3 rounded-full bg-[#28c840]" />
     </div>
-  )
-}
+
+    {/* Center: opens the command palette, like VS Code's command center */}
+    <button
+      type="button"
+      onClick={onCommandPalette}
+      className="flex items-center justify-center gap-2 px-3 py-0.5 rounded text-xs transition-all hover:opacity-80 min-w-0 flex-1 sm:flex-none sm:w-[340px]"
+      style={{ background: 'var(--bg-input)', color: 'var(--text-muted)' }}
+      title="Open Command Palette (Ctrl+Shift+P)"
+    >
+      <Search size={12} className="shrink-0" style={{ color: 'var(--text-dim)' }} />
+      <span className="truncate">
+        {activeFileName} — {portfolio.name}
+      </span>
+    </button>
+
+    {/* Window controls (decorative) */}
+    <div className="hidden sm:flex items-center gap-4 px-2" aria-hidden="true" style={{ color: 'var(--text-muted)' }}>
+      <Minus size={12} />
+      <Square size={11} />
+      <X size={12} />
+    </div>
+  </header>
+)

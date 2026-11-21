@@ -1,89 +1,59 @@
-import React, {
-  useState,
-  useRef,
-  useEffect
-} from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import type { KeyboardEvent } from 'react'
 import { Plus, Terminal as TermIcon, ChevronDown } from 'lucide-react'
 import type { TerminalEntry } from '../../types'
+import { COMMAND_NAMES } from '../../hooks/useTerminal'
+import { useDragResize } from '../../hooks/useDragResize'
+import { MIN_TERMINAL_HEIGHT, maxTerminalHeight } from '../../config/layout'
 
 interface TerminalProps {
   entries: TerminalEntry[]
   onCommand: (cmd: string) => void
+  onClear: () => void
   history: string[]
   isOpen: boolean
   onToggle: () => void
-  height?: number
-  onHeightChange?: (height: number) => void
+  height: number
+  onHeightChange: (height: number) => void
 }
 
 export const Terminal: React.FC<TerminalProps> = ({
   entries,
   onCommand,
+  onClear,
   history,
   isOpen,
   onToggle,
-  height = 220,
+  height,
   onHeightChange,
 }) => {
   const [input, setInput] = useState('')
   const [histIdx, setHistIdx] = useState(-1)
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const bodyRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const isFirstRender = useRef(true)
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const isDraggingRef = useRef(false)
-  const dragStartYRef = useRef(0)
-  const dragStartHeightRef = useRef(height)
+  const { isDragging, isHovered, handleProps } = useDragResize({
+    axis: 'y',
+    value: height,
+    min: MIN_TERMINAL_HEIGHT,
+    max: maxTerminalHeight,
+    onChange: onHeightChange,
+    cursor: 'row-resize',
+  })
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return
-    e.preventDefault()
-    e.stopPropagation()
-    e.currentTarget.setPointerCapture(e.pointerId)
-    isDraggingRef.current = true
-    setIsDragging(true)
-    dragStartYRef.current = e.clientY
-    dragStartHeightRef.current = height
-    document.body.style.cursor = 'row-resize'
-    document.body.style.userSelect = 'none'
-  }
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || !onHeightChange) return
-    const deltaY = dragStartYRef.current - e.clientY
-    const newHeight = dragStartHeightRef.current + deltaY
-    const maxHeight = Math.floor(window.innerHeight * 0.7)
-    const clamped = Math.min(Math.max(newHeight, 100), maxHeight)
-    onHeightChange(clamped)
-  }
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return
-    isDraggingRef.current = false
-    setIsDragging(false)
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId)
-    } catch {}
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
-  }
-
+  // Keep the terminal scrolled to the newest output (without scrolling ancestors)
   useEffect(() => {
-    return () => {
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
+    const el = bodyRef.current
+    if (el) el.scrollTop = el.scrollHeight
+  }, [entries, isOpen])
+
+  // Focus input when the user opens the terminal (but not on initial page load)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
     }
-  }, [])
-
-  // Auto-scroll to bottom on new entries
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [entries])
-
-  // Focus input when terminal opens
-  useEffect(() => {
     if (isOpen) inputRef.current?.focus()
   }, [isOpen])
 
@@ -96,26 +66,29 @@ export const Terminal: React.FC<TerminalProps> = ({
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault()
+      if (history.length === 0) return
       const newIdx = Math.min(histIdx + 1, history.length - 1)
       setHistIdx(newIdx)
-      setInput(history[newIdx] ?? '')
+      setInput(history[newIdx])
     } else if (e.key === 'ArrowDown') {
       e.preventDefault()
       const newIdx = Math.max(histIdx - 1, -1)
       setHistIdx(newIdx)
-      setInput(newIdx === -1 ? '' : (history[newIdx] ?? ''))
+      setInput(newIdx === -1 ? '' : history[newIdx])
     } else if (e.key === 'Tab') {
       e.preventDefault()
-      // Tab completion: find command starting with input
-      const CMDS = ['help', 'whoami', 'about', 'skills', 'projects', 'experience', 'education', 'contact', 'resume', 'ls', 'pwd', 'date', 'clear', 'sudo']
-      const match = CMDS.find(c => c.startsWith(input.toLowerCase()))
+      const prefix = input.trim().toLowerCase()
+      if (!prefix) return
+      const match = COMMAND_NAMES.find(c => c.startsWith(prefix))
       if (match) setInput(match)
+    } else if (e.key === 'l' && e.ctrlKey) {
+      e.preventDefault()
+      onClear()
     }
   }
 
   const entryColor = (type: TerminalEntry['type']) => {
     switch (type) {
-      case 'input': return 'var(--func)'
       case 'error': return 'var(--red)'
       case 'success': return 'var(--green)'
       case 'info': return 'var(--text-muted)'
@@ -133,26 +106,22 @@ export const Terminal: React.FC<TerminalProps> = ({
         transition: isDragging ? 'none' : 'height 0.2s ease',
       }}
     >
-      {/* Horizontal Drag Handle */}
-      {isOpen && onHeightChange && (
+      {/* Horizontal drag handle */}
+      {isOpen && (
         <div
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onPointerEnter={() => setIsHovered(true)}
-          onPointerLeave={() => setIsHovered(false)}
-          onClick={e => e.stopPropagation()}
+          {...handleProps}
           className="absolute left-0 right-0 z-30 transition-colors"
           style={{
             top: '-2px',
             height: '4px',
             cursor: 'row-resize',
+            touchAction: 'none',
             background: isDragging || isHovered ? 'var(--blue)' : 'transparent',
           }}
           title="Drag to resize terminal"
         />
       )}
+
       {/* Terminal header */}
       <div
         className="flex items-center gap-2 px-3 h-7 shrink-0 cursor-pointer select-none"
@@ -164,22 +133,32 @@ export const Terminal: React.FC<TerminalProps> = ({
             <TermIcon size={12} />
             TERMINAL
           </span>
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>PROBLEMS</span>
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>OUTPUT</span>
-          <span className="text-xs" style={{ color: 'var(--text-muted)' }}>DEBUG CONSOLE</span>
+          <span className="hidden sm:inline text-xs" style={{ color: 'var(--text-muted)' }}>PROBLEMS</span>
+          <span className="hidden sm:inline text-xs" style={{ color: 'var(--text-muted)' }}>OUTPUT</span>
+          <span className="hidden md:inline text-xs" style={{ color: 'var(--text-muted)' }}>DEBUG CONSOLE</span>
         </div>
         <div className="ml-auto flex items-center gap-1">
           <button
-            onClick={e => { e.stopPropagation(); /* new terminal */ }}
+            type="button"
+            onClick={e => {
+              e.stopPropagation()
+              onClear()
+              if (!isOpen) onToggle()
+              inputRef.current?.focus()
+            }}
             className="p-1 rounded hover:opacity-80 transition-opacity"
             title="New Terminal"
+            aria-label="New Terminal"
           >
             <Plus size={13} style={{ color: 'var(--text-muted)' }} />
           </button>
           <button
+            type="button"
             onClick={e => { e.stopPropagation(); onToggle() }}
             className="p-1 rounded hover:opacity-80 transition-opacity"
-            title="Toggle Terminal"
+            title="Toggle Terminal (Ctrl+`)"
+            aria-label="Toggle Terminal"
+            aria-expanded={isOpen}
           >
             <ChevronDown
               size={13}
@@ -196,6 +175,7 @@ export const Terminal: React.FC<TerminalProps> = ({
       {/* Terminal body */}
       {isOpen && (
         <div
+          ref={bodyRef}
           className="flex-1 overflow-y-auto px-3 py-1 font-mono text-xs"
           style={{ color: 'var(--text)' }}
           onClick={() => inputRef.current?.focus()}
@@ -204,17 +184,16 @@ export const Terminal: React.FC<TerminalProps> = ({
             <div key={entry.id} className="leading-relaxed">
               {entry.type === 'input' ? (
                 <div className="flex gap-2">
-                  <span style={{ color: 'var(--green)' }}>visitor</span>
-                  <span style={{ color: 'var(--text-muted)' }}>@</span>
-                  <span style={{ color: 'var(--blue)' }}>portfolio</span>
-                  <span style={{ color: 'var(--text-muted)' }}>:~$</span>
+                  <Prompt />
+                  {/* Rendered as text (escaped by React) — never as HTML */}
                   <span style={{ color: 'var(--func)' }}>{entry.content}</span>
                 </div>
               ) : (
                 <div
-                  className="pl-0"
+                  className="whitespace-pre-wrap"
                   style={{ color: entryColor(entry.type) }}
-                  dangerouslySetInnerHTML={{ __html: entry.content }}
+                  // Output is built by useTerminal, which escapes all dynamic text
+                  dangerouslySetInnerHTML={{ __html: entry.content || '&nbsp;' }}
                 />
               )}
             </div>
@@ -222,17 +201,14 @@ export const Terminal: React.FC<TerminalProps> = ({
 
           {/* Input line */}
           <div className="flex items-center gap-2 mt-1">
-            <span style={{ color: 'var(--green)' }}>visitor</span>
-            <span style={{ color: 'var(--text-muted)' }}>@</span>
-            <span style={{ color: 'var(--blue)' }}>portfolio</span>
-            <span style={{ color: 'var(--text-muted)' }}>:~$</span>
+            <Prompt />
             <input
               ref={inputRef}
               type="text"
               value={input}
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
-              className="flex-1 bg-transparent outline-none border-none font-mono text-xs caret-current"
+              className="flex-1 min-w-0 bg-transparent outline-none border-none font-mono text-xs"
               style={{ color: 'var(--text)', caretColor: 'var(--text)' }}
               spellCheck={false}
               autoCapitalize="off"
@@ -241,9 +217,17 @@ export const Terminal: React.FC<TerminalProps> = ({
               id="terminal-input"
             />
           </div>
-          <div ref={bottomRef} />
         </div>
       )}
     </div>
   )
 }
+
+const Prompt: React.FC = () => (
+  <span className="shrink-0">
+    <span style={{ color: 'var(--green)' }}>visitor</span>
+    <span style={{ color: 'var(--text-muted)' }}>@</span>
+    <span style={{ color: 'var(--blue)' }}>portfolio</span>
+    <span style={{ color: 'var(--text-muted)' }}>:~$</span>
+  </span>
+)

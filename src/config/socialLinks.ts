@@ -8,6 +8,7 @@ export const SOCIAL_LINKS = {
   TWITTER: 'https://x.com/ayushpremrocks',
   LEETCODE: 'https://leetcode.com/u/ayushpremrocks/',
   CODEFORCES: 'https://codeforces.com/profile/ayushpremrocks',
+  CODECHEF: 'https://www.codechef.com/users/ayushpremrocks',
 } as const
 
 export const GITHUB_URL = SOCIAL_LINKS.GITHUB
@@ -15,3 +16,4 @@ export const LINKEDIN_URL = SOCIAL_LINKS.LINKEDIN
 export const TWITTER_URL = SOCIAL_LINKS.TWITTER
 export const LEETCODE_URL = SOCIAL_LINKS.LEETCODE
 export const CODEFORCES_URL = SOCIAL_LINKS.CODEFORCES
+export const CODECHEF_URL = SOCIAL_LINKS.CODECHEF

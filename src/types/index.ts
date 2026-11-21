@@ -1,24 +1,13 @@
 // Types shared across all components
 
-export type ThemeName = 'one-dark-pro' | 'github-dark' | 'dracula'
-
-export interface FileNode {
-  id: string
-  name: string
-  icon: string        // lucide icon name or custom
-  type: 'file' | 'folder'
-  children?: FileNode[]
-  panel?: PanelName   // which panel this file opens
-  href?: string       // for external links (social)
-  language?: string
-  group?: string
-}
+export type ThemeName = 'dark-modern' | 'github-dark' | 'dracula'
 
 export type PanelName =
   | 'welcome'
   | 'about'
   | 'projects'
   | 'skills'
+  | 'achievements'
   | 'experience'
   | 'education'
   | 'contact'
@@ -32,11 +21,9 @@ export type PanelName =
 
 export interface Tab {
   id: string
-  fileId: string
   name: string
   panel: PanelName
   language: string
-  isDirty: boolean
   isActive: boolean
 }
 
@@ -44,7 +31,12 @@ export interface TerminalEntry {
   id: string
   type: 'input' | 'output' | 'error' | 'info' | 'success'
   content: string
-  timestamp?: string
+}
+
+export interface HobbyMedia {
+  src: string
+  type: 'gif' | 'video' | 'image'
+  alt?: string
 }
 
 export interface ThemeTokens {
@@ -61,8 +53,10 @@ export interface ThemeTokens {
   bgStatusbar:  string
   bgHover:      string
   bgSelected:   string
+  bgInput:      string
   border:       string
   text:         string
+  textStrong:   string
   textMuted:    string
   textDim:      string
   textLine:     string

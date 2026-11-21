@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { sportsWatch } from '../../data/hobbies'
 import type { WatchItem } from '../../data/hobbies'
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 export const SportsWatchPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       <motion.div
@@ -17,7 +18,7 @@ export const SportsWatchPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Sports I am deeply into
         </h1>
@@ -58,8 +59,6 @@ export const SportsWatchPanel: React.FC = () => {
 
 // ── Dispatcher — branches on whether the item has a `media` field ─────────────
 
-import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
-
 type CardProps = { team: WatchItem; index: number }
 
 const TeamCard: React.FC<CardProps> = ({ team, index }) =>
@@ -91,7 +90,7 @@ const MediaTileCard: React.FC<CardProps> = ({ team, index }) => {
         minHeight: '152px',
         borderRadius: '10px',
         overflow: 'hidden',
-        border: `1px solid ${hovered ? 'rgba(0,127,212,0.65)' : 'rgba(255,255,255,0.12)'}`,
+        border: `1px solid ${hovered ? 'color-mix(in srgb, var(--blue) 65%, transparent)' : 'rgba(255,255,255,0.12)'}`,
         textDecoration: 'none',
         cursor: 'pointer',
         transition: 'border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease',
@@ -161,7 +160,7 @@ const ClassicCard: React.FC<CardProps> = ({ team, index }) => {
         gap: '12px',
         padding: '20px 16px',
         borderRadius: '10px',
-        border: `1px solid ${hovered ? 'rgba(0,127,212,0.5)' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hovered ? 'color-mix(in srgb, var(--blue) 50%, transparent)' : 'rgba(255,255,255,0.08)'}`,
         background: hovered ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
         textDecoration: 'none',
         cursor: 'pointer',
@@ -201,7 +200,7 @@ const ClassicCard: React.FC<CardProps> = ({ team, index }) => {
       <div style={{ textAlign: 'center' }}>
         <div
           className="font-semibold text-sm mb-0.5"
-          style={{ color: hovered ? '#e8e8e8' : 'var(--text)' }}
+          style={{ color: hovered ? 'var(--text-strong)' : 'var(--text)' }}
         >
           {team.name}
         </div>

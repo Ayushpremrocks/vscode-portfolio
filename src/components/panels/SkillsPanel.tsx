@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronDown } from 'lucide-react'
+import { ChevronDown, Code2 } from 'lucide-react'
+import type { IconType } from 'react-icons'
 import {
   SiC, SiCplusplus, SiJavascript, SiTypescript, SiPython, SiHtml5, SiCss,
   SiReact, SiSpringboot, SiTailwindcss, SiNodedotjs, SiFastapi,
@@ -12,100 +13,63 @@ import {
 import { FaJava, FaAws } from 'react-icons/fa'
 import { TbSql } from 'react-icons/tb'
 import { VscVscode } from 'react-icons/vsc'
+import { portfolio, type Skill } from '../../data/portfolio'
 
-// ── Skill definition ──────────────────────────────────────────────────────────
-
-interface SkillItem {
-  name: string
-  icon: React.ReactNode
-  docsUrl: string
-}
-
-// ── All skill categories ──────────────────────────────────────────────────────
+// ── Icon lookup — skill data lives in data/portfolio.ts ───────────────────────
+// Skills without an entry here fall back to a generic code icon.
 
 const ICON_SIZE = 20
 
-const CATEGORIES: { label: string; color: string; skills: SkillItem[] }[] = [
-  {
-    label: 'Programming Languages',
-    color: '#569cd6',
-    skills: [
-      { name: 'C', icon: <SiC size={ICON_SIZE} />, docsUrl: 'https://en.cppreference.com/w/c' },
-      { name: 'C++', icon: <SiCplusplus size={ICON_SIZE} />, docsUrl: 'https://en.cppreference.com/w/cpp' },
-      { name: 'Java', icon: <FaJava size={ICON_SIZE} />, docsUrl: 'https://docs.oracle.com/en/java/' },
-      { name: 'JavaScript', icon: <SiJavascript size={ICON_SIZE} />, docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript' },
-      { name: 'TypeScript', icon: <SiTypescript size={ICON_SIZE} />, docsUrl: 'https://www.typescriptlang.org/docs/' },
-      { name: 'Python', icon: <SiPython size={ICON_SIZE} />, docsUrl: 'https://docs.python.org/3/' },
-      { name: 'SQL', icon: <TbSql size={ICON_SIZE} />, docsUrl: 'https://www.w3schools.com/sql/' },
-      { name: 'HTML', icon: <SiHtml5 size={ICON_SIZE} />, docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/HTML' },
-      { name: 'CSS', icon: <SiCss size={ICON_SIZE} />, docsUrl: 'https://developer.mozilla.org/en-US/docs/Web/CSS' },
-    ],
-  },
-  {
-    label: 'Web',
-    color: '#4ec9b0',
-    skills: [
-      { name: 'React.js', icon: <SiReact size={ICON_SIZE} />, docsUrl: 'https://react.dev' },
-      { name: 'Spring Boot', icon: <SiSpringboot size={ICON_SIZE} />, docsUrl: 'https://spring.io/projects/spring-boot' },
-      { name: 'Tailwind CSS', icon: <SiTailwindcss size={ICON_SIZE} />, docsUrl: 'https://tailwindcss.com/docs' },
-      { name: 'Node.js', icon: <SiNodedotjs size={ICON_SIZE} />, docsUrl: 'https://nodejs.org/en/docs' },
-      { name: 'FastAPI', icon: <SiFastapi size={ICON_SIZE} />, docsUrl: 'https://fastapi.tiangolo.com/' },
-    ],
-  },
-  {
-    label: 'ML',
-    color: '#c586c0',
-    skills: [
-      { name: 'PyTorch', icon: <SiPytorch size={ICON_SIZE} />, docsUrl: 'https://pytorch.org/docs/stable/index.html' },
-      { name: 'TensorFlow', icon: <SiTensorflow size={ICON_SIZE} />, docsUrl: 'https://www.tensorflow.org/api_docs' },
-      { name: 'Scikit-learn', icon: <SiScikitlearn size={ICON_SIZE} />, docsUrl: 'https://scikit-learn.org/stable/documentation.html' },
-      { name: 'NumPy', icon: <SiNumpy size={ICON_SIZE} />, docsUrl: 'https://numpy.org/doc/' },
-      { name: 'Pandas', icon: <SiPandas size={ICON_SIZE} />, docsUrl: 'https://pandas.pydata.org/docs/' },
-      { name: 'OpenCV', icon: <SiOpencv size={ICON_SIZE} />, docsUrl: 'https://docs.opencv.org/' },
-      { name: 'Streamlit', icon: <SiStreamlit size={ICON_SIZE} />, docsUrl: 'https://docs.streamlit.io/' },
-    ],
-  },
-  {
-    label: 'Database',
-    color: '#ce9178',
-    skills: [
-      { name: 'MongoDB', icon: <SiMongodb size={ICON_SIZE} />, docsUrl: 'https://www.mongodb.com/docs/' },
-      { name: 'MySQL', icon: <SiMysql size={ICON_SIZE} />, docsUrl: 'https://dev.mysql.com/doc/' },
-      { name: 'Cassandra', icon: <SiApachecassandra size={ICON_SIZE} />, docsUrl: 'https://cassandra.apache.org/doc/' },
-      { name: 'Redis', icon: <SiRedis size={ICON_SIZE} />, docsUrl: 'https://redis.io/docs/' },
-      { name: 'Neon', icon: <SiNeon size={ICON_SIZE} />, docsUrl: 'https://neon.tech/docs' },
-      { name: 'PostgreSQL', icon: <SiPostgresql size={ICON_SIZE} />, docsUrl: 'https://www.postgresql.org/docs/' },
-    ],
-  },
-  {
-    label: 'DevOps & Cloud',
-    color: '#dcdcaa',
-    skills: [
-      { name: 'AWS', icon: <FaAws size={ICON_SIZE} />, docsUrl: 'https://docs.aws.amazon.com/' },
-      { name: 'Docker', icon: <SiDocker size={ICON_SIZE} />, docsUrl: 'https://docs.docker.com/' },
-      { name: 'Render', icon: <SiRender size={ICON_SIZE} />, docsUrl: 'https://render.com/docs' },
-      { name: 'Vercel', icon: <SiVercel size={ICON_SIZE} />, docsUrl: 'https://vercel.com/docs' },
-    ],
-  },
-  {
-    label: 'Tools',
-    color: '#9cdcfe',
-    skills: [
-      { name: 'Git/GitHub', icon: <SiGithub size={ICON_SIZE} />, docsUrl: 'https://docs.github.com/' },
-      { name: 'Postman', icon: <SiPostman size={ICON_SIZE} />, docsUrl: 'https://learning.postman.com/docs/getting-started/introduction/' },
-      { name: 'IntelliJ', icon: <SiIntellijidea size={ICON_SIZE} />, docsUrl: 'https://www.jetbrains.com/idea/documentation/' },
-      { name: 'VS Code', icon: <VscVscode size={ICON_SIZE} />, docsUrl: 'https://code.visualstudio.com/docs' },
-      { name: 'Anaconda', icon: <SiAnaconda size={ICON_SIZE} />, docsUrl: 'https://docs.anaconda.com/' },
-      { name: 'Jupyter', icon: <SiJupyter size={ICON_SIZE} />, docsUrl: 'https://docs.jupyter.org/' },
-    ],
-  },
-]
+const SKILL_ICONS: Record<string, IconType> = {
+  'C': SiC,
+  'C++': SiCplusplus,
+  'Java': FaJava,
+  'JavaScript': SiJavascript,
+  'TypeScript': SiTypescript,
+  'Python': SiPython,
+  'SQL': TbSql,
+  'HTML': SiHtml5,
+  'CSS': SiCss,
+  'React.js': SiReact,
+  'Spring Boot': SiSpringboot,
+  'Tailwind CSS': SiTailwindcss,
+  'Node.js': SiNodedotjs,
+  'FastAPI': SiFastapi,
+  'PyTorch': SiPytorch,
+  'TensorFlow': SiTensorflow,
+  'Scikit-learn': SiScikitlearn,
+  'NumPy': SiNumpy,
+  'Pandas': SiPandas,
+  'OpenCV': SiOpencv,
+  'Streamlit': SiStreamlit,
+  'MongoDB': SiMongodb,
+  'MySQL': SiMysql,
+  'Cassandra': SiApachecassandra,
+  'Redis': SiRedis,
+  'Neon': SiNeon,
+  'PostgreSQL': SiPostgresql,
+  'AWS': FaAws,
+  'Docker': SiDocker,
+  'Render': SiRender,
+  'Vercel': SiVercel,
+  'Git/GitHub': SiGithub,
+  'Postman': SiPostman,
+  'IntelliJ': SiIntellijidea,
+  'VS Code': VscVscode,
+  'Anaconda': SiAnaconda,
+  'Jupyter': SiJupyter,
+}
+
+const SkillIcon: React.FC<{ name: string }> = ({ name }) => {
+  const Icon = SKILL_ICONS[name]
+  return Icon ? <Icon size={ICON_SIZE} /> : <Code2 size={ICON_SIZE} />
+}
 
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export const SkillsPanel: React.FC = () => {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>(
-    Object.fromEntries(CATEGORIES.map(c => [c.label, true]))
+    Object.fromEntries(portfolio.skills.map(c => [c.label, true]))
   )
 
   const toggle = (label: string) =>
@@ -113,7 +77,7 @@ export const SkillsPanel: React.FC = () => {
 
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       {/* Header */}
@@ -125,7 +89,7 @@ export const SkillsPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Skills
         </h1>
@@ -136,7 +100,7 @@ export const SkillsPanel: React.FC = () => {
 
       {/* Skill categories */}
       <div className="space-y-6">
-        {CATEGORIES.map((cat, ci) => (
+        {portfolio.skills.map((cat, ci) => (
           <motion.div
             key={cat.label}
             initial={{ opacity: 0, y: 12 }}
@@ -208,7 +172,7 @@ export const SkillsPanel: React.FC = () => {
 
 // ── Skill Card ────────────────────────────────────────────────────────────────
 
-const SkillCard: React.FC<{ skill: SkillItem; accentColor: string }> = ({ skill, accentColor }) => {
+const SkillCard: React.FC<{ skill: Skill; accentColor: string }> = ({ skill, accentColor }) => {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -226,7 +190,7 @@ const SkillCard: React.FC<{ skill: SkillItem; accentColor: string }> = ({ skill,
         borderRadius: '8px',
         border: `1px solid ${hovered ? accentColor + '55' : 'rgba(255,255,255,0.08)'}`,
         background: hovered ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
-        color: hovered ? '#e8e8e8' : 'var(--text-muted)',
+        color: hovered ? 'var(--text-strong)' : 'var(--text-muted)',
         textDecoration: 'none',
         cursor: 'pointer',
         transition: 'all 0.15s ease',
@@ -235,7 +199,7 @@ const SkillCard: React.FC<{ skill: SkillItem; accentColor: string }> = ({ skill,
       }}
     >
       <span style={{ color: hovered ? accentColor : 'var(--text-dim)', flexShrink: 0, transition: 'color 0.15s ease' }}>
-        {skill.icon}
+        <SkillIcon name={skill.name} />
       </span>
       <span style={{ fontSize: '12px', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
         {skill.name}

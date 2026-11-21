@@ -2,11 +2,12 @@ import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { games } from '../../data/hobbies'
 import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 export const GamesPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       <motion.div
@@ -17,7 +18,7 @@ export const GamesPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Games I Play
         </h1>
@@ -43,7 +44,7 @@ export const GamesPanel: React.FC = () => {
             </h2>
             <div
               className="grid gap-3"
-              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(150px, calc(50% - 8px)), 1fr))' }}
             >
               {group.games.map((game, gi2) => (
                 <GameCard key={game.id} game={game} index={gi2} />
@@ -55,8 +56,6 @@ export const GamesPanel: React.FC = () => {
     </div>
   )
 }
-
-import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 const GameCard: React.FC<{
   game: typeof games[0]['games'][0]
@@ -82,7 +81,7 @@ const GameCard: React.FC<{
           minHeight: '135px',
           borderRadius: '10px',
           overflow: 'hidden',
-          border: `1px solid ${hovered ? 'rgba(220,220,170,0.65)' : 'rgba(255,255,255,0.12)'}`,
+          border: `1px solid ${hovered ? 'color-mix(in srgb, var(--yellow) 65%, transparent)' : 'rgba(255,255,255,0.12)'}`,
           textDecoration: 'none',
           cursor: 'pointer',
           transition: 'all 0.18s ease',
@@ -130,7 +129,7 @@ const GameCard: React.FC<{
         display: 'flex',
         flexDirection: 'column',
         borderRadius: '10px',
-        border: `1px solid ${hovered ? 'rgba(220,220,170,0.45)' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hovered ? 'color-mix(in srgb, var(--yellow) 45%, transparent)' : 'rgba(255,255,255,0.08)'}`,
         overflow: 'hidden',
         textDecoration: 'none',
         cursor: 'pointer',
@@ -165,7 +164,7 @@ const GameCard: React.FC<{
       {/* Name */}
       <div
         className="px-3 py-2 text-xs font-medium text-center"
-        style={{ color: hovered ? '#e8e8e8' : 'var(--text-muted)' }}
+        style={{ color: hovered ? 'var(--text-strong)' : 'var(--text-muted)' }}
       >
         {game.name}
       </div>

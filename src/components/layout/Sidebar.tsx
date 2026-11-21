@@ -1,107 +1,58 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import {
-  ChevronRight,
-  FileCode2,
-} from 'lucide-react'
-import type { PanelName, Tab } from '../../types'
+import { ChevronRight, FileCode2 } from 'lucide-react'
+import type { PanelName } from '../../types'
 import { portfolio } from '../../data/portfolio'
+import { FILE_META } from '../../hooks/useFileSystem'
+import { useDragResize } from '../../hooks/useDragResize'
+import { MIN_SIDEBAR_WIDTH, maxSidebarWidth } from '../../config/layout'
 
 interface SidebarProps {
   activePanel: PanelName | null
-  tabs?: Tab[]
   onFileClick: (panel: PanelName) => void
-  width?: number
+  width: number
   onWidthChange?: (width: number) => void
+  /** Show the drag handle (off for the phone drawer). */
+  resizable?: boolean
 }
 
-const FILE_ENTRIES: { id: PanelName; name: string; icon?: React.ReactNode }[] = [
-  { id: 'about', name: 'about.ts' },
-  { id: 'projects', name: 'projects.ts' },
-  { id: 'skills', name: 'skills.ts' },
-  { id: 'experience', name: 'experience.ts' },
-  { id: 'education', name: 'education.ts' },
-  { id: 'contact', name: 'contact.ts' },
-  { id: 'resume', name: 'resume.ts' },
-]
+const PORTFOLIO_FILES: PanelName[] = ['about', 'projects', 'skills', 'achievements', 'experience', 'education', 'contact', 'resume']
+const HOBBY_FILES: PanelName[] = ['sports-watch', 'sports-play', 'instruments', 'games', 'movies-tv', 'anime']
 
-const HOBBY_ENTRIES: { id: PanelName; name: string }[] = [
-  { id: 'sports-watch', name: 'sports-watch.ts' },
-  { id: 'sports-play', name: 'sports-play.ts' },
-  { id: 'instruments', name: 'instruments.ts' },
-  { id: 'games', name: 'games.ts' },
-  { id: 'movies-tv', name: 'movies-tv.ts' },
-  { id: 'anime', name: 'anime.ts' },
-]
-
-export const Sidebar: React.FC<SidebarProps> = ({
-  activePanel,
-  onFileClick,
-  width = 240,
-  onWidthChange,
-}) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activePanel, onFileClick, width, onWidthChange, resizable = true }) => {
   const [openPortfolio, setOpenPortfolio] = useState(true)
   const [openHobbies, setOpenHobbies] = useState(true)
 
-  const [isHovered, setIsHovered] = useState(false)
-  const [isDragging, setIsDragging] = useState(false)
-  const isDraggingRef = useRef(false)
-  const dragStartXRef = useRef(0)
-  const dragStartWidthRef = useRef(width)
+  const { isDragging, isHovered, handleProps } = useDragResize({
+    axis: 'x',
+    value: width,
+    min: MIN_SIDEBAR_WIDTH,
+    max: maxSidebarWidth,
+    onChange: w => onWidthChange?.(w),
+    cursor: 'col-resize',
+  })
 
-  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return
-    e.preventDefault()
-    e.currentTarget.setPointerCapture(e.pointerId)
-    isDraggingRef.current = true
-    setIsDragging(true)
-    dragStartXRef.current = e.clientX
-    dragStartWidthRef.current = width
-    document.body.style.cursor = 'col-resize'
-    document.body.style.userSelect = 'none'
-  }
-
-  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current || !onWidthChange) return
-    const deltaX = e.clientX - dragStartXRef.current
-    const newWidth = dragStartWidthRef.current + deltaX
-    const maxWidth = Math.floor(window.innerWidth * 0.5)
-    const clamped = Math.min(Math.max(newWidth, 170), maxWidth)
-    onWidthChange(clamped)
-  }
-
-  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingRef.current) return
-    isDraggingRef.current = false
-    setIsDragging(false)
-    try {
-      e.currentTarget.releasePointerCapture(e.pointerId)
-    } catch {}
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
-  }
-
-  useEffect(() => {
-    return () => {
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
-    }
-  }, [])
+  const renderFiles = (files: PanelName[]) =>
+    files.map(panel => (
+      <FileItem
+        key={panel}
+        name={FILE_META[panel].name}
+        isActive={activePanel === panel}
+        onClick={() => onFileClick(panel)}
+      />
+    ))
 
   return (
-    <div
-      className="relative flex flex-col shrink-0 text-xs select-none"
+    <nav
+      aria-label="Explorer"
+      className="relative flex flex-col shrink-0 text-xs select-none h-full min-h-0"
       style={{
         width: `${width}px`,
         background: 'var(--bg-sidebar)',
         borderRight: '1px solid var(--border)',
-        minHeight: 0,
-        height: '100%',
       }}
     >
-      {/* Scrollable Explorer content */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden min-h-0">
-        {/* Header */}
         <div
           className="px-4 py-1.5 text-[10px] font-semibold tracking-widest uppercase"
           style={{ color: 'var(--text-muted)' }}
@@ -109,59 +60,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
           Explorer
         </div>
 
-        {/* PORTFOLIO (AYUSH PREM) */}
-        <SidebarSection
-          label={portfolio.name}
-          open={openPortfolio}
-          onToggle={() => setOpenPortfolio(v => !v)}
-        >
-          {FILE_ENTRIES.map(f => (
-            <FileItem
-              key={f.id}
-              name={f.name}
-              isActive={activePanel === f.id}
-              onClick={() => onFileClick(f.id)}
-            />
-          ))}
+        <SidebarSection label={portfolio.name} open={openPortfolio} onToggle={() => setOpenPortfolio(v => !v)}>
+          {renderFiles(PORTFOLIO_FILES)}
         </SidebarSection>
 
-        {/* HOBBIES */}
-        <SidebarSection
-          label="Hobbies"
-          open={openHobbies}
-          onToggle={() => setOpenHobbies(v => !v)}
-        >
-          {HOBBY_ENTRIES.map(f => (
-            <FileItem
-              key={f.id}
-              name={f.name}
-              isActive={activePanel === f.id}
-              onClick={() => onFileClick(f.id)}
-            />
-          ))}
+        <SidebarSection label="Hobbies" open={openHobbies} onToggle={() => setOpenHobbies(v => !v)}>
+          {renderFiles(HOBBY_FILES)}
         </SidebarSection>
       </div>
 
-      {/* Resize Handle */}
-      {onWidthChange && (
-        <div
-          onPointerDown={handlePointerDown}
-          onPointerMove={handlePointerMove}
-          onPointerUp={handlePointerUp}
-          onPointerCancel={handlePointerUp}
-          onPointerEnter={() => setIsHovered(true)}
-          onPointerLeave={() => setIsHovered(false)}
-          className="absolute top-0 right-0 bottom-0 z-30 transition-colors"
-          style={{
-            width: '4px',
-            marginRight: '-2px',
-            cursor: 'col-resize',
-            background: isDragging || isHovered ? 'var(--blue)' : 'transparent',
-          }}
-          title="Drag to resize sidebar"
-        />
-      )}
-    </div>
+      {/* Resize handle */}
+      {resizable && <div
+        {...handleProps}
+        className="absolute top-0 right-0 bottom-0 z-30 transition-colors"
+        style={{
+          width: '4px',
+          marginRight: '-2px',
+          cursor: 'col-resize',
+          touchAction: 'none',
+          background: isDragging || isHovered ? 'var(--blue)' : 'transparent',
+        }}
+        title="Drag to resize sidebar"
+      />}
+    </nav>
   )
 }
 
@@ -175,11 +96,10 @@ const SidebarSection: React.FC<{
 }> = ({ label, open, onToggle, children }) => (
   <div>
     <button
+      type="button"
       onClick={onToggle}
-      className="w-full flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider transition-colors"
-      style={{ color: 'var(--text-muted)' }}
-      onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-      onMouseLeave={e => (e.currentTarget.style.color = 'var(--text-muted)')}
+      aria-expanded={open}
+      className="w-full flex items-center gap-1 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider transition-colors text-[color:var(--text-muted)] hover:text-[color:var(--text)]"
     >
       <span className="transition-transform" style={{ transform: open ? 'rotate(90deg)' : 'rotate(0deg)' }}>
         <ChevronRight size={12} />
@@ -208,25 +128,15 @@ const FileItem: React.FC<{
   onClick: () => void
 }> = ({ name, isActive, onClick }) => (
   <button
+    type="button"
     onClick={onClick}
-    className="w-full flex items-center gap-2 pl-6 pr-3 py-1 transition-colors text-left"
-    style={{
-      background: isActive ? 'var(--bg-selected)' : 'transparent',
-      color: isActive ? '#ffffff' : 'var(--text-muted)',
-      boxShadow: isActive ? 'inset 2px 0 0 0 var(--blue)' : 'none',
-    }}
-    onMouseEnter={e => {
-      if (!isActive) {
-        e.currentTarget.style.background = 'var(--bg-hover)'
-        e.currentTarget.style.color = 'var(--text)'
-      }
-    }}
-    onMouseLeave={e => {
-      if (!isActive) {
-        e.currentTarget.style.background = 'transparent'
-        e.currentTarget.style.color = 'var(--text-muted)'
-      }
-    }}
+    aria-current={isActive ? 'page' : undefined}
+    className={`w-full flex items-center gap-2 pl-6 pr-3 py-1 transition-colors text-left ${
+      isActive
+        ? 'bg-[var(--bg-selected)] text-[color:var(--text-strong)]'
+        : 'text-[color:var(--text-muted)] hover:bg-[var(--bg-hover)] hover:text-[color:var(--text)]'
+    }`}
+    style={{ boxShadow: isActive ? 'inset 2px 0 0 0 var(--blue)' : 'none' }}
   >
     <FileCode2 size={14} style={{ color: 'var(--blue)', flexShrink: 0 }} />
     <span className="truncate">{name}</span>

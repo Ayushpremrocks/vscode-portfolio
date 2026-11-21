@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import type { HobbyMedia } from '../../data/hobbies'
+import type { HobbyMedia } from '../../types'
 
 export interface HobbyMediaDisplayProps {
   media?: HobbyMedia

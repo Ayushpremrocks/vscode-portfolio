@@ -1,12 +1,12 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { GraduationCap, Calendar, Award } from 'lucide-react'
-import { portfolio } from '../../data/portfolio'
+import { portfolio, type Education } from '../../data/portfolio'
 
 export const EducationPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       {/* Header */}
@@ -18,7 +18,7 @@ export const EducationPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Education
         </h1>
@@ -46,7 +46,7 @@ export const EducationPanel: React.FC = () => {
 
 // ── Card ──────────────────────────────────────────────────────────────────────
 
-const EducationCard: React.FC<{ education: typeof portfolio.education[0] }> = ({ education }) => {
+const EducationCard: React.FC<{ education: Education }> = ({ education }) => {
   const [hovered, setHovered] = React.useState(false)
 
   return (
@@ -67,12 +67,14 @@ const EducationCard: React.FC<{ education: typeof portfolio.education[0] }> = ({
         <div className="flex items-start gap-3">
           <GraduationCap size={18} style={{ color: 'var(--green)', flexShrink: 0, marginTop: 2 }} />
           <div>
-            <h3 className="font-semibold text-sm mb-0.5" style={{ color: '#e8e8e8' }}>
+            <h3 className="font-semibold text-sm mb-0.5" style={{ color: 'var(--text-strong)' }}>
               {education.degree}
             </h3>
-            <p className="text-xs mb-0.5" style={{ color: 'var(--blue)' }}>
-              {education.field}
-            </p>
+            {education.field && (
+              <p className="text-xs mb-0.5" style={{ color: 'var(--blue)' }}>
+                {education.field}
+              </p>
+            )}
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
               {education.school}
             </p>
@@ -86,13 +88,13 @@ const EducationCard: React.FC<{ education: typeof portfolio.education[0] }> = ({
           </div>
           {education.gpa && (
             <div className="flex items-center gap-1.5">
-              <Award size={10} style={{ color: '#dcdcaa' }} />
+              <Award size={10} style={{ color: 'var(--yellow)' }} />
               <span
                 className="text-[11px] px-2 py-0.5 rounded-full font-mono"
                 style={{
-                  background: 'rgba(220,220,170,0.1)',
-                  color: '#dcdcaa',
-                  border: '1px solid rgba(220,220,170,0.2)',
+                  background: 'color-mix(in srgb, var(--yellow) 10%, transparent)',
+                  color: 'var(--yellow)',
+                  border: '1px solid color-mix(in srgb, var(--yellow) 20%, transparent)',
                 }}
               >
                 GPA {education.gpa}

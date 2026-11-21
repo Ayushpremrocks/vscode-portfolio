@@ -1,12 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* ─── Default theme (One Dark Pro) injected here; JS overrides via CSS vars ─ */
+/* ─── Default theme (Dark Modern) — useTheme() overrides these at runtime ─── */
+/* Keep in sync with themes['dark-modern'] in src/styles/themes.ts            */
 :root {
   --bg: #1f1f1f;
-  --bg-editor: #0d0d0d;
+  --bg-editor: #1f1f1f;
   --bg-sidebar: #181818;
   --bg-actbar: #181818;
   --bg-titlebar: #181818;
@@ -19,6 +19,7 @@
   --bg-input: #313131;
   --border: #2b2d31;
   --text: #cccccc;
+  --text-strong: #e8e8e8;
   --text-muted: #9d9d9d;
   --text-dim: #6e7681;
   --text-line: #6e7681;
@@ -96,34 +97,16 @@ body {
   color: var(--text);
 }
 
-/* ─── Blinking cursor keyframe ──────────────────────────────────────────── */
-@keyframes blink {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0;
-  }
-}
-
 /* ─── Focus ring (accessibility) ────────────────────────────────────────── */
 button:focus-visible,
-input:focus-visible,
+input:not(#terminal-input):focus-visible,
 textarea:focus-visible,
 a:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
 }
 
-/* ─── Overflow utilities ─────────────────────────────────────────────────── */
-.overflow-y-overlay {
-  overflow-y: overlay;
-}
-
-/* ─── Tab bar horizontal scroll ─────────────────────────────────────────── */
+/* ─── Tab bar: horizontal scroll without a visible scrollbar ────────────── */
 .tab-scroll {
   overflow-x: auto;
   scrollbar-width: none;
@@ -133,16 +116,19 @@ a:focus-visible {
   display: none;
 }
 
-/* ─── Code font for the whole app ────────────────────────────────────────── */
-.font-code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  line-height: 1.6;
+/* ─── Touch devices ─────────────────────────────────────────────────────── */
+/* iOS Safari zooms the page when focusing an input smaller than 16px. */
+@media (pointer: coarse) {
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
-/* ─── Responsive: hide sidebar on very small screens ──────────────────── */
-@media (max-width: 640px) {
-  .sidebar-hide-mobile {
-    display: none;
-  }
+/* Keep the status bar clear of the iPhone home indicator / notch. */
+#vscode-portfolio {
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
 }

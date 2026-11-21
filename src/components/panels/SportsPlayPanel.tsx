@@ -2,11 +2,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { sportsPlay } from '../../data/hobbies'
 import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 export const SportsPlayPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       <motion.div
@@ -17,7 +18,7 @@ export const SportsPlayPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Sports I am playing
         </h1>
@@ -43,7 +44,7 @@ export const SportsPlayPanel: React.FC = () => {
             </h2>
             <div
               className="grid gap-3"
-              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))' }}
+              style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(140px, calc(50% - 8px)), 1fr))' }}
             >
               {group.sports.map((sport, si) => (
                 <SportCard key={sport.id} sport={sport} index={si} />
@@ -55,8 +56,6 @@ export const SportsPlayPanel: React.FC = () => {
     </div>
   )
 }
-
-import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 const SportCard: React.FC<{
   sport: typeof sportsPlay[0]['sports'][0]
@@ -142,7 +141,7 @@ const SportCard: React.FC<{
       </div>
       <span
         className="text-sm font-medium text-center"
-        style={{ color: hovered ? '#e8e8e8' : 'var(--text-muted)' }}
+        style={{ color: hovered ? 'var(--text-strong)' : 'var(--text-muted)' }}
       >
         {sport.name}
       </span>

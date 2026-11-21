@@ -2,11 +2,12 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { instruments } from '../../data/hobbies'
 import { HobbyMediaDisplay } from '../ui/HobbyMediaDisplay'
+import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 export const InstrumentsPanel: React.FC = () => {
   return (
     <div
-      className="min-h-full px-8 py-10"
+      className="min-h-full px-1 sm:px-4 lg:px-8 py-6 sm:py-10"
       style={{ fontFamily: "'Inter', 'Segoe UI', sans-serif", color: 'var(--text)' }}
     >
       <motion.div
@@ -17,7 +18,7 @@ export const InstrumentsPanel: React.FC = () => {
       >
         <h1
           className="text-3xl font-bold mb-2 tracking-tight"
-          style={{ color: '#e8e8e8', letterSpacing: '-0.02em' }}
+          style={{ color: 'var(--text-strong)', letterSpacing: '-0.02em' }}
         >
           Instruments I Play
         </h1>
@@ -28,7 +29,7 @@ export const InstrumentsPanel: React.FC = () => {
 
       <div
         className="grid gap-4"
-        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(min(160px, calc(50% - 8px)), 1fr))' }}
       >
         {instruments.map((item, i) => (
           <InstrumentCard key={item.id} item={item} index={i} />
@@ -37,8 +38,6 @@ export const InstrumentsPanel: React.FC = () => {
     </div>
   )
 }
-
-import { HobbyMediaBackground } from '../ui/HobbyMediaBackground'
 
 const InstrumentCard: React.FC<{
   item: typeof instruments[0]
@@ -134,7 +133,7 @@ const InstrumentCard: React.FC<{
       </div>
       <span
         className="text-sm font-semibold text-center"
-        style={{ color: hovered ? '#e8e8e8' : 'var(--text-muted)' }}
+        style={{ color: hovered ? 'var(--text-strong)' : 'var(--text-muted)' }}
       >
         {item.name}
       </span>

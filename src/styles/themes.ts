@@ -1,9 +1,11 @@
 import type { ThemeName, ThemeTokens } from '../types'
 
+export const DEFAULT_THEME: ThemeName = 'dark-modern'
+
 export const themes: Record<ThemeName, ThemeTokens> = {
-  'one-dark-pro': {
-    name:           'one-dark-pro',
-    label:          'One Dark Pro',
+  'dark-modern': {
+    name:           'dark-modern',
+    label:          'Dark Modern',
     bg:             '#1f1f1f',
     bgEditor:       '#1f1f1f',
     bgSidebar:      '#181818',
@@ -15,8 +17,10 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     bgStatusbar:    '#181818',
     bgHover:        '#2a2d2e',
     bgSelected:     '#04395e',
+    bgInput:        '#313131',
     border:         '#2b2d31',
     text:           '#cccccc',
+    textStrong:     '#e8e8e8',
     textMuted:      '#9d9d9d',
     textDim:        '#6e7681',
     textLine:       '#6e7681',
@@ -52,8 +56,10 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     bgStatusbar:    '#238636',
     bgHover:        '#1c2128',
     bgSelected:     '#1f6feb55',
+    bgInput:        '#21262d',
     border:         '#30363d',
     text:           '#e6edf3',
+    textStrong:     '#f0f6fc',
     textMuted:      '#8b949e',
     textDim:        '#6e7681',
     textLine:       '#484f58',
@@ -89,10 +95,12 @@ export const themes: Record<ThemeName, ThemeTokens> = {
     bgStatusbar:    '#6272a4',
     bgHover:        '#44475a',
     bgSelected:     '#44475a88',
+    bgInput:        '#343746',
     border:         '#44475a',
     text:           '#f8f8f2',
-    textMuted:      '#6272a4',
-    textDim:        '#44475a',
+    textStrong:     '#ffffff',
+    textMuted:      '#a0a8cd',
+    textDim:        '#6272a4',
     textLine:       '#6272a4',
     keyword:        '#ff79c6',
     string:         '#f1fa8c',

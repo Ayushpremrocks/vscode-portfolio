@@ -2,15 +2,10 @@
 // data/hobbies.ts — Centralized hobby data for all hobby panels
 // =============================================================================
 
+import type { HobbyMedia } from '../types'
 import { getHobbyMedia, auditHobbyMedia } from '../utils/hobbyMedia'
 
 // ── Sports Watch ─────────────────────────────────────────────────────────────
-
-export interface HobbyMedia {
-  src: string
-  type: 'gif' | 'video' | 'image'
-  alt?: string
-}
 
 export interface WatchItem {
   id: string
@@ -410,7 +405,7 @@ const rawAnime: AnimeItem[] = [
   {
     id: '100meters',
     name: '100 Meters',
-    year: '2024',
+    year: '2025',
     url: 'https://www.imdb.com/title/tt32600395/',
     imageUrl: '', // IMDB doesn't allow hotlinking; use placeholder
     isPlaceholder: true,
@@ -422,13 +417,6 @@ export const anime: AnimeItem[] = rawAnime.map((a) => ({
   media: a.media ?? getHobbyMedia('anime', a.name),
 }))
 
-// Audit all cards against discovered media assets in development mode
-auditHobbyMedia([
-  ...sportsWatch.flatMap((g) => g.teams),
-  ...sportsPlay.flatMap((g) => g.sports),
-  ...instruments,
-  ...games.flatMap((g) => g.games),
-  ...moviesTV.flatMap((g) => g.items),
-  ...anime,
-])
+// Dev-only: warn about map entries with missing files and files no card uses
+auditHobbyMedia()
 
